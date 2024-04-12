@@ -43,3 +43,15 @@ create <a><strong>validator_positions.json</strong></a>
 ```
 pm2 start server.py -- --port 8000
 ```
+
+## Test service
+```
+curl --location 'http://localhost:8000/texts/distances' \
+--header 'Content-Type: application/json' \
+--data '{
+    "texts": [
+        "Almond cookie-like crust, sliced and layered apricots on the bottom, topped with a insanely delicious almond cream, covered in rhubarb ribbons and a crumble topping!"
+    ],
+    "validator": "hk1"
+}'
+```
