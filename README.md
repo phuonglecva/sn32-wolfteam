@@ -20,3 +20,26 @@ awscli configure (contact admin to get credentials)
 
 aws s3 cp embeddings/xxx.npy s3://sn32/embeddings/part/xx.npy
 ```
+
+
+# Start distance service
+## Prepare embeddings datasets
+Download dataset from s3 and put them to embeddings/ folder
+```
+embeddings/
+└── 88.npy
+
+0 directories, 1 file
+```
+
+create <a><strong>validator_positions.json</strong></a>
+```
+{
+    "hk1": <part_id>
+}
+```
+
+## Start service
+```
+pm2 start server.py -- --port 8000
+```
