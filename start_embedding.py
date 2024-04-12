@@ -23,17 +23,16 @@ def embeddings(fpath: str, part: int, model: SentenceTransformer, pool, batch_si
     print(f"Embeddings shape: {embeddings.shape}, time taken: {time.time() - start} seconds.")
     os.makedirs("embeddings/part", exist_ok=True)
 
-    with open(f"embeddings/part/{fpath}.npy", "wb") as f:
+    with open(f"embeddings/{part}.npy", "wb") as f:
         np.save(f, embeddings)
     print(f"Embeddings for '{fpath}' saved successfully. Time taken: {time.time() - start} seconds.")
     
 
 def get_model():
     model = SentenceTransformer(
-        'jinaai/jina-embeddings-v2-small-en',
+        'sentence-transformers/all-MiniLM-L12-v2',
         trust_remote_code=True
     )
-    model.max_seq_length = 1024
     return model
 
 

@@ -1,3 +1,5 @@
 download/*
 output/*
 embeddings/*
+validator_positions.json
+test.py
