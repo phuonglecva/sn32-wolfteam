@@ -1,3 +1,13 @@
+# Install requirements.txt
+```
+pip3 install -r requirements.txt
+```
+
+# Run install nltk
+```
+python3 nltk_install.py
+```
+
 # Download data files 
 ```
 python3 download.py --part part_id

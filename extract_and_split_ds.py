@@ -11,7 +11,7 @@ if __name__=='__main__':
     import argparse
     from nltk.tokenize import sent_tokenize
     parser = argparse.ArgumentParser(description='Extract and Split datasets for embedding')
-    parser.add_argument('part', type=int, help='Part number')
+    parser.add_argument('--part', type=int, help='Part number')
     args = parser.parse_args()
     
     # build part as 5 digit, zero padded string
