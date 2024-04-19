@@ -5,7 +5,7 @@ import numpy as np
 from sentence_transformers import SentenceTransformer
 
 
-def embeddings(fpath: str, part: int, model: SentenceTransformer, pool, batch_size: int = 128):
+def embeddings(fpath: str, part: int, model: SentenceTransformer, pool, batch_size: int = 384):
     """
     Args:
         fpath (str): path to texts file
@@ -15,7 +15,7 @@ def embeddings(fpath: str, part: int, model: SentenceTransformer, pool, batch_si
         batch_size (int, optional): batch size. Defaults to 128.
     """
     start = time.time()
-    with open(f"output/{fpath}.json", "r", encoding="utf8") as f:
+    with open(f"{fpath}", "r", encoding="utf8") as f:
         texts = json.load(f)
     print(f"Loaded {len(texts)} texts from '{fpath}'.")    
     print(f"Embedding {len(texts)} texts.")

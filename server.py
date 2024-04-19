@@ -7,15 +7,16 @@ import uvicorn
 import logging
 from sentence_transformers import SentenceTransformer
 from nltk.tokenize import sent_tokenize
-
+import logging
 import torch
+import ttl_cache
+
 def get_model(device="cuda:0"):
     model = SentenceTransformer(
         'sentence-transformers/all-MiniLM-L12-v2',
         trust_remote_code=True,
         device=device
     )
-    model.max_seq_length = 1024
     return model
 
 class EmbeddingManager:
@@ -31,13 +32,18 @@ class EmbeddingManager:
 
         self.model = get_model("cpu")
         
+        self.CACHE = {}
+        
+        
     def load_positions(self):
         import json
         with open("validator_positions.json", "r") as f:
             self.positions = json.load(f)
         
         self.device_by_validator = {}
+        VALIDATORS = list(self.positions.keys())
         for i, validator_hk in enumerate(self.positions.keys()):
+            i = i % 2
             self.device_by_validator[validator_hk] = f"cuda:{i}"
             
     def load_embeddings(self):
@@ -67,9 +73,16 @@ class EmbeddingManager:
             idx[indices[i]].append(i)
         return sentences, idx
     
+    def hash_texts_and_hk(self, texts: str, validator_hk: str):
+        import hashlib
+        texts = "".join(texts)
+        return hashlib.md5(f"{texts}{validator_hk}".encode()).hexdigest()
     def get_distances(self, texts: str, validator_hk: str):
-        sentences, indices = self.preprocess(texts)
+        hash_key = self.hash_texts_and_hk(texts, validator_hk)
+        if hash_key in self.CACHE:
+            return self.CACHE[hash_key]
         
+        sentences, indices = self.preprocess(texts)
         target_device = self.device_by_validator[validator_hk]
         embs = self.model.encode(sentences)
         embs = torch.from_numpy(embs).to(target_device)
@@ -86,22 +99,32 @@ class EmbeddingManager:
         for i in range(len(texts)):
             ids = indices[i]
             final_result.append(sum([result[j] for j in ids]) / len(ids))
+        self.CACHE[hash_key] = final_result
         return final_result
     
+    def refresh_cache(self):
+        self.CACHE = {}
+
+def refresh_cache(e_manager):
+    while True:
+        print(f"Refreshing cache...")
+        e_manager.refresh_cache()
+        print(f"Cache refreshed and sleeping for 1 hour")
+        time.sleep(60*60)    
+            
 app = FastAPI()
 @app.get("/")
 def healthcheck():
     return {"status": "ok"}
 
 from typing import List
-
 class TextRequest(BaseModel):
     texts: List[str]
     validator:  str
-    
+
 @app.post("/texts/distances")
 def text_distances(request: TextRequest):
-    logging.info(f"Request: {request}")
+    logging.info(f"Request validator: {request.validator}")
     try:
         sim = e_manager.get_distances(request.texts, request.validator)
         logging.info(f"distances: {sim}")
@@ -113,10 +136,15 @@ def text_distances(request: TextRequest):
     
 if __name__=='__main__':
     import argparse
+    import threading
+    log_config = uvicorn.config.LOGGING_CONFIG
+    log_config["formatters"]["access"]["fmt"] = "%(asctime)s - %(levelname)s - %(message)s"
+    log_config["formatters"]["default"]["fmt"] = "%(asctime)s - %(levelname)s - %(message)s"
     
     parser = argparse.ArgumentParser(description='Embedding service')
     parser.add_argument('--port', type=int, default=8000, help='Port number')
     args = parser.parse_args()
     
     e_manager = EmbeddingManager()
-    uvicorn.run(app, host="0.0.0.0", port=args.port)
+    threading.Thread(target=refresh_cache, args=(e_manager,), daemon=True).start()
+    uvicorn.run(app, host="0.0.0.0", port=args.port, log_config=log_config)
