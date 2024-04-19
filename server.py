@@ -131,12 +131,16 @@ class TextRequest(BaseModel):
     validator:  str
 
 import redis
-CACHE = redis.Redis(host='localhost', port=6379, db=0)
+CACHE = redis.Redis(host='localhost', port=30379, db=0)
 
 @app.post("/texts/distances")
 def text_distances(text_req: TextRequest):
     hash_key = e_manager.hash_texts_and_hk(text_req.texts, text_req.validator)
-    cached_response =  CACHE.get(hash_key)
+    try:
+        cached_response =  CACHE.get(hash_key)
+    except Exception as e:
+        logger.info(f"Error: {e}")
+        cached_response = None
     if cached_response:
         logger.info(f"CACHE HIT: {hash_key}")
         distances = json.loads(cached_response)
@@ -146,7 +150,8 @@ def text_distances(text_req: TextRequest):
     try:
         sim = e_manager.get_distances(text_req.texts, text_req.validator)
         logging.info(f"distances: {sim}")
-        CACHE.set(hash_key, json.dumps(sim))
+        if CACHE:
+            CACHE.set(hash_key, json.dumps(sim))
         return {"distances": sim}
     except Exception as e:
         logging.error(f"Error: {e}")
