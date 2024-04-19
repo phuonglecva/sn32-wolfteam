@@ -2,3 +2,4 @@ fastapi
 uvicorn
 sentence_transformers
 nltk
+redis
