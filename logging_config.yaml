@@ -1,0 +1,29 @@
+# logging_config.yaml
+
+version: 1
+disable_existing_loggers: False
+
+formatters:
+  simple:
+    format: '%(asctime)s - %(name)s - %(levelname)s - %(message)s'
+
+handlers:
+  console:
+    class: logging.StreamHandler
+    level: DEBUG
+    formatter: simple
+    stream: ext://sys.stdout
+
+loggers:
+  uvicorn:
+    level: INFO
+    handlers: [console]
+    propagate: False
+  uvicorn.error:
+    level: ERROR
+    handlers: [console]
+    propagate: False
+  fastapi:
+    level: DEBUG
+    handlers: [console]
+    propagate: False
