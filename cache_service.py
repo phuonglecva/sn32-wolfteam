@@ -55,28 +55,27 @@ class EmbeddingManager:
             self.positions = json.load(f)
 
         self.device_by_validator = {}
-        VALIDATORS = list(self.positions.keys())
-        # get list cuda devices
-        cuda_count = torch.cuda.device_count()
-        print(f"Found {cuda_count} cuda devices.")
-        for i, validator_hk in enumerate(self.positions.keys()):
-            i = i % cuda_count
-            self.device_by_validator[validator_hk] = f"cuda:{i}"
+        
+        for validator_hk, position in self.positions.items():
+            self.device_by_validator[validator_hk] = f"cuda:{position['device_id']}"
 
     def load_embeddings(self):
         import os
         for i, validator_hk in enumerate(self.positions.keys()):
             device = self.device_by_validator[validator_hk]
             validator_position = self.positions[validator_hk]
-            fpath = f"embeddings/{validator_position}.npy"
-            if os.path.exists(fpath):
-                embedding = np.load(fpath)
-                self.embeddings_by_validator[validator_hk] = torch.from_numpy(
-                    embedding).to(device)
-                print(
-                    f"Loaded embeddings for {validator_hk} with shape: {self.embeddings_by_validator[validator_hk].shape}")
-            else:
-                print(f"Embeddings for {validator_hk} not found.")
+            embeddings = None
+            for part in validator_position["parts"]:
+                fpath = f"embeddings/{validator_position}.npy"
+                if os.path.exists(fpath):
+                    embedding = np.load(fpath)
+                    if embeddings is None:
+                        embeddings = embedding
+                    else:
+                        embeddings = np.concatenate([embeddings, embedding], axis=0)
+            if embeddings is not None:
+                self.embeddings_by_validator[validator_hk] = torch.from_numpy(embeddings).to(device)
+            print(f"Loaded embeddings for {validator_hk} with shape: {self.embeddings_by_validator[validator_hk].shape}")
 
     def preprocess(self, texts: str):
         sentences = []
@@ -155,7 +154,7 @@ def get_response_from_cache(hash_key: str, timeout: int = 10):
     while True:
         value = CACHE.get(hash_key).decode()
         if value != "":
-            logger.info("CACHE HIT for {hash_key}")
+            logger.info(f"CACHE HIT for {hash_key}")
             return json.loads(value)
 
         if time.time() - start > timeout:
