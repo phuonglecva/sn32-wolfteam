@@ -66,7 +66,7 @@ class EmbeddingManager:
             validator_position = self.positions[validator_hk]
             embeddings = None
             for part in validator_position["parts"]:
-                fpath = f"embeddings/{validator_position}.npy"
+                fpath = f"embeddings/{part}.npy"
                 if os.path.exists(fpath):
                     embedding = np.load(fpath)
                     if embeddings is None:
