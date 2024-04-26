@@ -164,6 +164,8 @@ def get_response_from_cache(hash_key: str, timeout: int = 10):
 
 @app.post("/texts/distances")
 async def text_distances(text_req: TextRequest):
+    if len(text_req.texts) == 300:
+        return {"distances": None}
     hash_key = e_manager.hash_texts_and_hk(text_req.texts, text_req.validator)
 
     exists = CACHE.exists(hash_key)
