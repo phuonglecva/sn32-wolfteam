@@ -57,6 +57,13 @@ create <a><strong>validator_positions.json</strong></a>
 }
 ```
 
+## Embeddings
+```
+    parser.add_argument('--devices', type=str, default="0")
+    parser.add_argument("--input_file", type=str, default="data/0.json")
+    parser.add_argument("--output_file", type=str, default="output/0/1.npy")
+
+python3 start_embedding.py --devices 0,1,2,3,4,5,6,7 --input_file <input_file> --output_file embeddings/0/1.npy
 ## Start service
 ```
 pm2 start cache_sevice_v2.py -- --parts 0,1,2 --embeds_dir embeddings/<part> --port 9999  

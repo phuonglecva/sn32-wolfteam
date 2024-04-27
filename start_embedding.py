@@ -5,7 +5,10 @@ import numpy as np
 from sentence_transformers import SentenceTransformer
 
 
-def embeddings(fpath: str, part: int, model: SentenceTransformer, pool, batch_size: int = 384):
+def embeddings(
+    fpath: str, part: int, model: SentenceTransformer, 
+    pool, output_file: str, 
+    batch_size: int = 384):
     """
     Args:
         fpath (str): path to texts file
@@ -23,7 +26,7 @@ def embeddings(fpath: str, part: int, model: SentenceTransformer, pool, batch_si
     print(f"Embeddings shape: {embeddings.shape}, time taken: {time.time() - start} seconds.")
     os.makedirs("embeddings/part", exist_ok=True)
 
-    with open(f"embeddings/{part}.npy", "wb") as f:
+    with open(output_file, "wb") as f:
         np.save(f, embeddings)
     print(f"Embeddings for '{fpath}' saved successfully. Time taken: {time.time() - start} seconds.")
     
@@ -39,9 +42,9 @@ def get_model():
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser(description='Embedding service')
-    parser.add_argument('--part', type=int, help='Part number')
     parser.add_argument('--devices', type=str, default="0")
-    
+    parser.add_argument("--input_file", type=str, default="data/0.json")
+    parser.add_argument("--output_file", type=str, default="output/0/1.npy")
     args = parser.parse_args()
     devices = args.devices.split(',')   
     if len(devices) == 0:
@@ -52,5 +55,4 @@ if __name__ == "__main__":
     model = get_model()
     pool = model.start_multi_process_pool(target_devices=devices)
     part = str(args.part).zfill(5)
-    file_path = f'output/{part}.json'
-    embeddings(file_path, args.part, model, pool)
+    embeddings(args.input_file, args.part, model, pool, args.output_file)
