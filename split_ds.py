@@ -12,18 +12,20 @@ import os
 
 texts = []
 current_part = 1
+import pathlib
 with open(args.path, "r") as f:
     for line in f:
         row = json.loads(line)
         text = row['text']
         sentences = sent_tokenize(text) 
         texts.extend(sentences)
-        
+    
         if len(texts) >= MAX_ROWS:
-            save_path = f"output/{args.path}/{current_part}.json"
-            
+            position = args.path.split("/")[-1].split(".")[0]
+            save_path = f"output/{position}/{current_part}.json"
+            # os.makedirs(os.path.dirname(save_path), exist_ok=True)            
+            pathlib.Path(save_path).parent.mkdir(parents=True, exist_ok=True)
             print(f"Saving {len(texts)} rows to {save_path}")
-            os.makedirs("output", exist_ok=True)
             with open(save_path, 'w', encoding="utf8") as f:
                 json.dump(texts, f, indent=2, ensure_ascii=False)
             
