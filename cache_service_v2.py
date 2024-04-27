@@ -150,7 +150,8 @@ class EmbeddingManagerV2:
         final_result = []
         for i in range(len(texts)):
             ids = indices[i]
-            final_result.append(sum([result[j] for j in ids]) / len(ids))
+            min_value = min([result[j] for j in ids])
+            final_result.append(min_value)
         return final_result
     
     
