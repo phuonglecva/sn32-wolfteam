@@ -15,6 +15,9 @@ from nltk.tokenize import sent_tokenize
 import logging
 import torch
 import sys
+from concurrent.futures import ThreadPoolExecutor
+
+executor = ThreadPoolExecutor(max_workers=20)
 
 logger = logging.getLogger(__name__)
 logger.setLevel(logging.DEBUG)
@@ -34,49 +37,43 @@ def get_model(device="cuda:0"):
     return model
 
 
-class EmbeddingManager:
-    def __init__(self, keys_path="validator_positions.json") -> None:
+class EmbeddingManagerV2:
+    
+    def get_device(self, part: int, gpus: int):
+        return f"cuda:{part % gpus}"
+        
+    def __init__(self, embeds_dir, parts) -> None:
         self.batch_size = 5000
         self.FILES_PER_PART = 30
         self.cos_layer = torch.nn.CosineSimilarity(dim=2)
         # euclidean distance layer
         self.euclidean_layer = torch.nn.PairwiseDistance(p=2)
-        self.embeddings_by_validator = {}
-        self.load_positions()
+        
+        self.embeddings_dir = embeds_dir
+        self.parts = [int(p) for p in parts.split(",")]
         self.load_embeddings()
 
         self.model = get_model("cpu")
-
+        self.MAX_FILE = 16
         self.CACHE = {}
 
-    def load_positions(self):
-        import json
-        with open("validator_positions.json", "r") as f:
-            self.positions = json.load(f)
-
-        self.device_by_validator = {}
-        
-        for validator_hk, position in self.positions.items():
-            self.device_by_validator[validator_hk] = f"cuda:{position['device_id']}"
-
     def load_embeddings(self):
+        
+        self.embeddings_by_devices = {}
+        for cuda in torch.cuda.device_count():
+            self.embeddings_by_devices[f"cuda:{cuda}"] = None
+        
         import os
-        for i, validator_hk in enumerate(self.positions.keys()):
-            device = self.device_by_validator[validator_hk]
-            validator_position = self.positions[validator_hk]
-            embeddings = None
-            for part in validator_position["parts"]:
-                fpath = f"embeddings/{part}.npy"
-                if os.path.exists(fpath):
-                    embedding = np.load(fpath)
-                    if embeddings is None:
-                        embeddings = embedding
-                    else:
-                        embeddings = np.concatenate([embeddings, embedding], axis=0)
-            if embeddings is not None:
-                self.embeddings_by_validator[validator_hk] = torch.from_numpy(embeddings).to(device)
-            print(f"Loaded embeddings for {validator_hk} with shape: {self.embeddings_by_validator[validator_hk].shape}")
-
+        for i, part in self.parts:
+            device = self.get_device(i, torch.cuda.device_count())
+            if self.embeddings_by_devices[device] is None:
+                self.embeddings_by_devices[device] = np.load(f"{self.embeddings_dir}/{part}.npy")
+            else:
+                self.embeddings_by_devices[device] = np.concatenate([self.embeddings_by_devices[device], np.load(f"{self.embeddings_dir}/{part}.npy")], axis=0)
+        print(f"Loaded embeddings for {len(self.embeddings_by_devices)} devices")
+        for device in self.embeddings_by_devices.keys():
+            self.embeddings_by_devices[device] = torch.from_numpy(self.embeddings_by_devices[device]).to(device)
+            
     def preprocess(self, texts: str):
         sentences = []
         indices = []
@@ -121,10 +118,38 @@ class EmbeddingManager:
             final_result.append(sum([result[j] for j in ids]) / len(ids))
         return final_result
 
-    def refresh_cache(self):
-        self.CACHE = {}
+    def distances(self, text_embeddings, embeddings):
+        result = []
+        for i in range(0, len(embeddings), self.batch_size):
+            batch = embeddings[i:i+self.batch_size]
+            sim = torch.cdist(text_embeddings, batch).min(dim=1).values
+            result.append(sim.unsqueeze(0))
+        return result
+        # return torch.cat(result, dim=0).min(dim=0).values.tolist()
+    
+    def get_distances_v2(self, texts: str):
+        
+        sentences, indices = self.preprocess(texts)
+        embs = self.model.encode(sentences)
+        result = []
+        futures = []
+        for device, embeddings in self.embeddings_by_devices.items():
+            print(f"text embeddings for {device}")
+            target_embs = torch.from_numpy(embs).to(device)
+            future = executor.submit(self.distances, target_embs, embeddings)
+            futures.append(future)
+        
+        for future in futures:
+            result.extend(future.result())
+        result = torch.cat(result, dim=0).min(dim=0).values.tolist()
 
-
+        final_result = []
+        for i in range(len(texts)):
+            ids = indices[i]
+            final_result.append(sum([result[j] for j in ids]) / len(ids))
+        return final_result
+    
+    
 def refresh_cache(e_manager):
     while True:
         print(f"Refreshing cache...")
@@ -164,22 +189,22 @@ def get_response_from_cache(hash_key: str, timeout: int = 10):
 
 @app.post("/texts/distances")
 async def text_distances(text_req: TextRequest):
-    if len(text_req.texts) == 300:
-        return {"distances": None}
-    hash_key = e_manager.hash_texts_and_hk(text_req.texts, text_req.validator)
+    # if len(text_req.texts) == 300:
+    #     return {"distances": None}
+    # hash_key = e_manager.hash_texts_and_hk(text_req.texts, text_req.validator)
 
-    exists = CACHE.exists(hash_key)
-    if exists:
-        print(f"GET from cache: {hash_key}, validator: {text_req.validator}")
-        distances = await run_in_threadpool(get_response_from_cache, hash_key)
-        return {"distances": distances}
+    # exists = CACHE.exists(hash_key)
+    # if exists:
+    #     print(f"GET from cache: {hash_key}, validator: {text_req.validator}")
+    #     distances = await run_in_threadpool(get_response_from_cache, hash_key)
+    #     return {"distances": distances}
 
-    logger.info(f"Request validator: {text_req.validator}")
-    CACHE.set(hash_key, "")
+    # logger.info(f"Request validator: {text_req.validator}")
+    # CACHE.set(hash_key, "")
     try:
-        sim = await run_in_threadpool(e_manager.get_distances, text_req.texts, text_req.validator)
+        sim = await run_in_threadpool(e_manager.get_distances_v2, text_req.texts, text_req.validator)
         logging.info(f"distances: {sim}")
-        CACHE.set(hash_key, json.dumps(sim))
+        # CACHE.set(hash_key, json.dumps(sim))
         return {"distances": sim}
 
     except Exception as e:
@@ -191,7 +216,9 @@ if __name__ == '__main__':
     import threading
     parser = argparse.ArgumentParser(description='Embedding service')
     parser.add_argument('--port', type=int, default=8000, help='Port number')
+    parser.add_argument('--embeds_dir', type=str, default="embeddings/00/", help='Embeddings directory')
+    parser.add_argument("--parts", type=str, default="0,1,2,3,4,5,6,7,8,9", help="Parts")
     args = parser.parse_args()
-
-    e_manager = EmbeddingManager()
+    
+    e_manager = EmbeddingManagerV2(args.embeds_dir, args.parts)
     uvicorn.run(app, host="0.0.0.0", port=args.port)
