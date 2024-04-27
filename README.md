@@ -23,7 +23,7 @@ unzstd <part_id>.jsonl.zst --output-dir-flat inputs
 
 # extract and split sentences
 ```
-python3 extract_and_split_ds.py --part part_id
+python3 split_ds.py --path <path.jsonl>
 ```
 
 # embeddings

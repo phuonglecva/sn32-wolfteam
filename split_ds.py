@@ -20,7 +20,7 @@ with open(args.path, "r") as f:
         texts.extend(sentences)
         
         if len(texts) >= MAX_ROWS:
-            save_path = f"{args.path}{current_part}"
+            save_path = f"output/{args.path}/{current_part}.json"
             
             print(f"Saving {len(texts)} rows to {save_path}")
             os.makedirs("output", exist_ok=True)
