@@ -15,7 +15,7 @@ from nltk.tokenize import sent_tokenize
 import logging
 import torch
 import sys
-from concurrent.futures import ThreadPoolExecutor
+from concurrent.futures import ThreadPoolExecutor, ProcessPoolExecutor
 
 executor = ThreadPoolExecutor(max_workers=20)
 
@@ -59,12 +59,15 @@ class EmbeddingManagerV2:
 
     def load_embeddings(self):
         
-        self.embeddings_by_devices = {}
-        for cuda in torch.cuda.device_count():
+        self.embeddings_by_devices = {
+            "cuda:0": None,
+            "cuda:1": None
+        }
+        for cuda in range(torch.cuda.device_count()):
             self.embeddings_by_devices[f"cuda:{cuda}"] = None
-        
+
         import os
-        for i, part in self.parts:
+        for i, part in enumerate(self.parts):
             device = self.get_device(i, torch.cuda.device_count())
             if self.embeddings_by_devices[device] is None:
                 self.embeddings_by_devices[device] = np.load(f"{self.embeddings_dir}/{part}.npy")
@@ -72,6 +75,7 @@ class EmbeddingManagerV2:
                 self.embeddings_by_devices[device] = np.concatenate([self.embeddings_by_devices[device], np.load(f"{self.embeddings_dir}/{part}.npy")], axis=0)
         print(f"Loaded embeddings for {len(self.embeddings_by_devices)} devices")
         for device in self.embeddings_by_devices.keys():
+            print(f"Load embeddings for device: {device}")
             self.embeddings_by_devices[device] = torch.from_numpy(self.embeddings_by_devices[device]).to(device)
             
     def preprocess(self, texts: str):
@@ -118,12 +122,12 @@ class EmbeddingManagerV2:
             final_result.append(sum([result[j] for j in ids]) / len(ids))
         return final_result
 
-    def distances(self, text_embeddings, embeddings):
+    def distances(self, text_embeddings: torch.Tensor, embeddings: torch.Tensor):
         result = []
         for i in range(0, len(embeddings), self.batch_size):
             batch = embeddings[i:i+self.batch_size]
             sim = torch.cdist(text_embeddings, batch).min(dim=1).values
-            result.append(sim.unsqueeze(0))
+            result.append(sim.unsqueeze(0).to("cpu"))
         return result
         # return torch.cat(result, dim=0).min(dim=0).values.tolist()
     
@@ -202,7 +206,7 @@ async def text_distances(text_req: TextRequest):
     # logger.info(f"Request validator: {text_req.validator}")
     # CACHE.set(hash_key, "")
     try:
-        sim = await run_in_threadpool(e_manager.get_distances_v2, text_req.texts, text_req.validator)
+        sim = await run_in_threadpool(e_manager.get_distances_v2, text_req.texts)
         logging.info(f"distances: {sim}")
         # CACHE.set(hash_key, json.dumps(sim))
         return {"distances": sim}
@@ -216,8 +220,8 @@ if __name__ == '__main__':
     import threading
     parser = argparse.ArgumentParser(description='Embedding service')
     parser.add_argument('--port', type=int, default=8000, help='Port number')
-    parser.add_argument('--embeds_dir', type=str, default="embeddings/00/", help='Embeddings directory')
-    parser.add_argument("--parts", type=str, default="0,1,2,3,4,5,6,7,8,9", help="Parts")
+    parser.add_argument('--embeds_dir', type=str, default="embeddings/0", help='Embeddings directory')
+    parser.add_argument("--parts", type=str, default="0,1,2,3,4,5,6,7,8,9,10,11,12,13,14,15", help="Parts")
     args = parser.parse_args()
     
     e_manager = EmbeddingManagerV2(args.embeds_dir, args.parts)
