@@ -179,7 +179,7 @@ class TextRequest(BaseModel):
 CACHE = redis.Redis(host='localhost', port=30379, db=0)
 
 
-def get_response_from_cache(hash_key: str, timeout: int = 10):
+def get_response_from_cache(hash_key: str, timeout: int = 15):
     start = time.time()
     while True:
         value = CACHE.get(hash_key).decode()
@@ -194,22 +194,22 @@ def get_response_from_cache(hash_key: str, timeout: int = 10):
 
 @app.post("/texts/distances")
 async def text_distances(text_req: TextRequest):
-    # if len(text_req.texts) == 300:
-    #     return {"distances": None}
-    # hash_key = e_manager.hash_texts_and_hk(text_req.texts, text_req.validator)
+    if len(text_req.texts) == 300:
+        return {"distances": None}
+    hash_key = e_manager.hash_texts_and_hk(text_req.texts, text_req.validator)
 
-    # exists = CACHE.exists(hash_key)
-    # if exists:
-    #     print(f"GET from cache: {hash_key}, validator: {text_req.validator}")
-    #     distances = await run_in_threadpool(get_response_from_cache, hash_key)
-    #     return {"distances": distances}
+    exists = CACHE.exists(hash_key)
+    if exists:
+        print(f"GET from cache: {hash_key}, validator: {text_req.validator}")
+        distances = await run_in_threadpool(get_response_from_cache, hash_key)
+        return {"distances": distances}
 
-    # logger.info(f"Request validator: {text_req.validator}")
-    # CACHE.set(hash_key, "")
+    logger.info(f"Request validator: {text_req.validator}")
+    CACHE.set(hash_key, "")
     try:
         sim = await run_in_threadpool(e_manager.get_distances_v2, text_req.texts)
         logging.info(f"distances: {sim}")
-        # CACHE.set(hash_key, json.dumps(sim))
+        CACHE.set(hash_key, json.dumps(sim))
         return {"distances": sim}
 
     except Exception as e:
