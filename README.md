@@ -59,9 +59,21 @@ create <a><strong>validator_positions.json</strong></a>
 
 ## Start service
 ```
-pm2 start server.py -- --port 8000
+pm2 start cache_sevice_v2.py -- --parts 0,1,2 --embeds_dir embeddings/<part> --port 9999  
 ```
 
+## Start coordinator
+```
+update validator_hosts.json
+
+{
+    "hk1": ["http://localhost:8000"]
+}
+```
+
+```
+pm2 start coordinator_service.py -- --port 9090
+```
 ## Test service
 ```
 curl --location 'http://localhost:8000/texts/distances' \
