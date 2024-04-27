@@ -10,7 +10,15 @@ python3 nltk_install.py
 
 # Download data files 
 ```
-python3 download.py --part part_id
+mkdir inputs
+
+wget https://huggingface.co/datasets/monology/pile-uncopyrighted/resolve/main/train/<part_id>.jsonl.zst
+
+*part_id 2 chu so: 00, 01, ...
+
+
+sudo apt-get install zstd -y
+unzstd <part_id>.jsonl.zst --output-dir-flat inputs
 ```
 
 # extract and split sentences
