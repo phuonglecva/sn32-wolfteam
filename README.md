@@ -68,6 +68,7 @@ curl --location 'http://localhost:8000/texts/distances' \
 
 ## Find text in directory
 ```
+sudo apt install parallel
 sudo chmod +x search.sh
 ./search.sh <directory_name> <text> > output.txt
 ```
