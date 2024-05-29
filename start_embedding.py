@@ -21,9 +21,11 @@ def embeddings(fpath: str, part: int, model: SentenceTransformer, pool, batch_si
     print(f"Embedding {len(texts)} texts.")
     embeddings = model.encode_multi_process(texts, pool, batch_size=batch_size)
     print(f"Embeddings shape: {embeddings.shape}, time taken: {time.time() - start} seconds.")
-    os.makedirs("embeddings/part", exist_ok=True)
-
-    with open(f"embeddings/{part}.npy", "wb") as f:
+    output = f"embeddings/{part}.npy"
+    # os.makedirs("embeddings/part", exist_ok=True)
+    import pathlib
+    pathlib.Path(output).parent.mkdir(parents=True, exist_ok=True)
+    with open(output, "wb") as f:
         np.save(f, embeddings)
     print(f"Embeddings for '{fpath}' saved successfully. Time taken: {time.time() - start} seconds.")
     
@@ -39,7 +41,7 @@ def get_model():
 if __name__ == "__main__":
     import argparse
     parser = argparse.ArgumentParser(description='Embedding service')
-    parser.add_argument('--part', type=int, help='Part number')
+    parser.add_argument('--part', type=str, help='Part number')
     parser.add_argument('--devices', type=str, default="0")
     
     args = parser.parse_args()
@@ -51,6 +53,6 @@ if __name__ == "__main__":
     
     model = get_model()
     pool = model.start_multi_process_pool(target_devices=devices)
-    part = str(args.part).zfill(5)
+    part = str(args.part)
     file_path = f'output/{part}.json'
     embeddings(file_path, args.part, model, pool)
