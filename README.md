@@ -65,3 +65,9 @@ curl --location 'http://localhost:8000/texts/distances' \
     "validator": "hk1"
 }'
 ```
+
+## Find text in directory
+```
+sudo chmod +x search.sh
+./search.sh <directory_name> <text> > output.txt
+```
