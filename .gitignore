@@ -3,3 +3,4 @@ output/*
 embeddings/*
 validator_positions.json
 test.py
+__pycache__/
