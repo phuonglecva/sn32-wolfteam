@@ -104,8 +104,12 @@ def infer_distance(texts):
 
             distance_result.append(None)
 
-        print(f'human_num_sentence_1: {human_num_sentence_1}')
-        print(f'ai_num_sentence_1: {ai_num_sentence_1}')
+        print(f'human_num_sentence_1_score: {human_num_sentence_1_score}')
+        print(f'ai_num_sentence_1_score: {ai_num_sentence_1_score}')
+        print(f'human_num_sentence_2_score: {human_num_sentence_2_score}')
+        print(f'ai_num_sentence_2_score: {ai_num_sentence_2_score}')
+
+
         print(f'distance result: {distance_result}')
         print_accuracy_distance(distance_result)
         time_end = time.time_ns()
