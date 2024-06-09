@@ -35,7 +35,7 @@ def infer_distance(texts):
         for i, text in enumerate(texts):
             sentences = sent_tokenize(text)
             length_sentences.append(len(sentences))
-            sentences = sentences[-4:]
+            sentences = sentences[-3:]
             for _ in sentences:
                 if i not in index_for_text:
                     index_for_text[i] = []
@@ -78,7 +78,7 @@ def infer_distance(texts):
             if len(list_result) > 3:
                 is_ai = True
                 for score in list_result:
-                    is_ai = is_ai and (score > 0.5)
+                    is_ai = is_ai and (score > 0.3)
                 if is_ai:
                     distance_result.append(True)
                     continue
