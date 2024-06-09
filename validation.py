@@ -69,7 +69,18 @@ def infer_distance(texts):
             is_human = True
             for score in list_result:
                 is_human = is_human and (score < 0.001)
-            distance_result.append(is_human)
+            if is_human:
+                distance_result.append(True)
+                continue
+
+            is_ai = True
+            for score in list_result:
+                is_ai = is_ai or (score > 0.3)
+            if is_ai:
+                distance_result.append(False)
+                continue
+
+            distance_result.append(None)
 
         print(f'distance result: {distance_result}')
         time_end = time.time_ns()
@@ -89,8 +100,8 @@ def infer_with_distance(texts):
     preds = infer_model(texts)
     result = []
     for i in range(len(distances)):
-        if distances[i]:
-            result.append(False)
+        if distances[i] is not None:
+            result.append(distances[i])
         else:
             result.append(preds[i])
     return result
