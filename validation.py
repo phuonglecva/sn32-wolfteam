@@ -62,12 +62,15 @@ def infer_distance(texts):
         # print(f"Response: {response.json()}")
         result = response.json()["result"]
         print(f'distance score: {result}')
-        final_result = []
+        distance_result = []
         for i, text in enumerate(texts):
             list_index = index_for_text[i]
             list_result = [result[j] for j in list_index]
-            final_result.append(min(list_result))
-        distance_result = [score < 0.001 for score in final_result]
+            is_human = True
+            for score in list_result:
+                is_human = is_human and (score < 0.001)
+            distance_result.append(is_human)
+
         print(f'distance result: {distance_result}')
         time_end = time.time_ns()
         print(f'time processing distance: {(time_end - time_start) // 1000_000} ms')
