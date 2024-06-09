@@ -78,7 +78,7 @@ def infer_distance(texts):
         return [False] * len(texts)
 
 
-def infer_with_distance(texts: list[str]):
+def infer_with_distance(texts):
     distances = infer_distance(texts)
     preds = infer_model(texts)
     result = []
