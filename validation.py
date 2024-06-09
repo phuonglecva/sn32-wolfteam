@@ -123,9 +123,10 @@ def print_accuracy_distance(response):
     second_half = response[150:]
     first_wrong = first_half.count(True)
     second_wrong = second_half.count(False)
+    count_not_none = [x is not None for x in response]
     print(f'accuracy_distance first_wrong is {first_wrong}')
     print(f'accuracy_distance second_wrong is {second_wrong}')
-
+    print(f'count_not_none count_not_none is {count_not_none.count(True)}')
 
 
 
