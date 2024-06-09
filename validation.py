@@ -33,7 +33,7 @@ def infer_distance(texts):
         start_i = 0
         for i, text in enumerate(texts):
             sentences = sent_tokenize(text)
-            sentences = sentences[-3:]
+            sentences = sentences[-4:]
             for _ in sentences:
                 if i not in index_for_text:
                     index_for_text[i] = []
