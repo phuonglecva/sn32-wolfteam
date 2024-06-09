@@ -104,6 +104,7 @@ if __name__ == '__main__':
         with open(file_path, 'r') as f:
             data = json.load(f)
             texts = data['texts']
+            print(f'texts = {texts}')
 
         model_only_response = infer_model(texts)
         distance_response = infer_with_distance(texts)
