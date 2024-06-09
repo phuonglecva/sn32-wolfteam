@@ -70,6 +70,7 @@ def infer_distance(texts):
         print(f'distance result: {distance_result}')
         time_end = time.time_ns()
         print(f'time processing distance: {(time_end - time_start) // 1000_000} ms')
+        distance_result = [not r for r in distance_result]
         print_accuracy(distance_result, 'distance_result')
 
         return distance_result
