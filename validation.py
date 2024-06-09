@@ -65,26 +65,28 @@ def infer_distance(texts):
         result = response.json()["result"]
         print(f'distance score: {result}')
         distance_result = []
+        human_num_sentence_1 = []
+        ai_num_sentence_1 = []
+
         for i, text in enumerate(texts):
             list_index = index_for_text[i]
             list_result = [result[j] for j in list_index]
+            if length_sentences[i] == 1:
+                if i < 150:
+                    human_num_sentence_1.append(list_result[0])
+                else:
+                    ai_num_sentence_1.append(list_result[0])
 
-            if length_sentences[i] < 1000:
-                is_human = True
-                for score in list_result:
-                    is_human = is_human and (score < 0.0001)
-                if is_human:
-                    distance_result.append(False)
-                    continue
+            print(f'human_num_sentence_1: {human_num_sentence_1}')
+            print(f'ai_num_sentence_1: {ai_num_sentence_1}')
 
-            else:
-                count_hu = 0
-                for score in list_result:
-                    if score < 0.001:
-                        count_hu = count_hu + 1
-                if count_hu > 1 and list_result[len(list_result) - 1] < 0.001:
-                    distance_result.append(False)
-                    continue
+            count_hu = 0
+            for score in list_result:
+                if score < 0.001:
+                    count_hu = count_hu + 1
+            if count_hu == len(list_result):
+                distance_result.append(False)
+                continue
 
             if length_sentences[i] > 1:
                 count_ai = 0
