@@ -108,6 +108,10 @@ if __name__ == '__main__':
             # print(f'texts = {texts}')
 
         model_only_response = infer_model(texts)
+        print(f'model only response: {model_only_response}')
+
         distance_response = infer_with_distance(texts)
+        print(f'distance response: {distance_response}')
+
         rewards, metrics = get_rewards(labels, [model_only_response, distance_response])
         print(rewards, metrics)
