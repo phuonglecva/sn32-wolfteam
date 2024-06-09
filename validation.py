@@ -75,7 +75,7 @@ def infer_distance(texts):
 
             is_ai = True
             for score in list_result:
-                is_ai = is_ai or (score > 0.3)
+                is_ai = is_ai and (score > 0.3)
             if is_ai:
                 distance_result.append(False)
                 continue
