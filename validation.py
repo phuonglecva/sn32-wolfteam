@@ -68,12 +68,23 @@ def infer_distance(texts):
         for i, text in enumerate(texts):
             list_index = index_for_text[i]
             list_result = [result[j] for j in list_index]
-            is_human = True
-            for score in list_result:
-                is_human = is_human and (score < 0.001)
-            if is_human:
-                distance_result.append(False)
-                continue
+
+            if length_sentences[i] < 3:
+                is_human = True
+                for score in list_result:
+                    is_human = is_human and (score < 0.001)
+                if is_human:
+                    distance_result.append(False)
+                    continue
+
+            else:
+                count_hu = 0
+                for score in list_result:
+                    if score < 0.001:
+                        count_hu = count_hu + 1
+                if count_hu > 1:
+                    distance_result.append(False)
+                    continue
 
             if length_sentences[i] > 1:
                 count_ai = 0
@@ -127,7 +138,6 @@ def print_accuracy_distance(response):
     print(f'accuracy_distance first_wrong is {first_wrong}')
     print(f'accuracy_distance second_wrong is {second_wrong}')
     print(f'count_not_none count_not_none is {count_not_none.count(True)}')
-
 
 
 if __name__ == '__main__':
