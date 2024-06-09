@@ -85,7 +85,6 @@ def infer_distance(texts):
                 else:
                     ai_num_sentence_2_score.append(list_result)
 
-
             count_hu = 0
             for score in list_result:
                 if score < 0.001:
@@ -111,7 +110,7 @@ def infer_distance(texts):
                     distance_result.append(True)
                     continue
 
-        distance_result.append(None)
+            distance_result.append(None)
 
         print(f'human_num_sentence_1_score: {human_num_sentence_1_score}')
         print(f'ai_num_sentence_1_score: {ai_num_sentence_1_score}')
