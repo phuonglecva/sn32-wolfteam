@@ -72,7 +72,7 @@ def infer_distance(texts):
             if length_sentences[i] < 4:
                 is_human = True
                 for score in list_result:
-                    is_human = is_human and (score < 0.001)
+                    is_human = is_human and (score < 0.0001)
                 if is_human:
                     distance_result.append(False)
                     continue
@@ -82,7 +82,7 @@ def infer_distance(texts):
                 for score in list_result:
                     if score < 0.001:
                         count_hu = count_hu + 1
-                if count_hu > 1:
+                if count_hu > 1 and list_result[len(list_result) - 1] < 0.001:
                     distance_result.append(False)
                     continue
 
