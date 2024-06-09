@@ -70,14 +70,14 @@ def infer_distance(texts):
             for score in list_result:
                 is_human = is_human and (score < 0.001)
             if is_human:
-                distance_result.append(True)
+                distance_result.append(False)
                 continue
 
             is_ai = True
             for score in list_result:
                 is_ai = is_ai and (score > 0.3)
             if is_ai:
-                distance_result.append(False)
+                distance_result.append(True)
                 continue
 
             distance_result.append(None)
