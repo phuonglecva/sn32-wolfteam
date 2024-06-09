@@ -78,7 +78,7 @@ def infer_distance(texts):
             if length_sentences[i] > 2:
                 is_ai = True
                 for score in list_result:
-                    is_ai = is_ai and (score > 0.2)
+                    is_ai = is_ai and (score > 0.1)
                 if is_ai:
                     distance_result.append(True)
                     continue
