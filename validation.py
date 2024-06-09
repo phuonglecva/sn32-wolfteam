@@ -4,7 +4,7 @@ import time
 from nltk.tokenize import sent_tokenize
 
 
-def infer_model(texts: list[str]):
+def infer_model(texts):
     print(f'start infer_model')
     time_start = time.time_ns()
     import requests
@@ -20,7 +20,7 @@ def infer_model(texts: list[str]):
     return result
 
 
-def infer_distance(texts: list[str]):
+def infer_distance(texts):
     try:
         print(f'start call infer_distance')
         time_start = time.time_ns()
