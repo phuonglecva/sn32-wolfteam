@@ -31,8 +31,10 @@ def infer_distance(texts):
         new_texts = []
         index_for_text = {}
         start_i = 0
+        length_sentences = []
         for i, text in enumerate(texts):
             sentences = sent_tokenize(text)
+            length_sentences.append(len(sentences))
             sentences = sentences[-4:]
             for _ in sentences:
                 if i not in index_for_text:
@@ -42,7 +44,7 @@ def infer_distance(texts):
                 start_i += 1
             new_texts.extend(sentences)
         # write text to file data.json
-
+        print(f'length_sentences = {length_sentences}')
         import json
         with open('data.json', 'w') as f:
             json.dump(new_texts, f, indent=2)
