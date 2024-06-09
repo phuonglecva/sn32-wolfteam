@@ -70,6 +70,7 @@ def infer_distance(texts):
         print(f'distance result: {distance_result}')
         time_end = time.time_ns()
         print(f'time processing distance: {(time_end - time_start) // 1000_000} ms')
+        print_accuracy(distance_result, 'distance_result')
 
         return distance_result
 
@@ -88,6 +89,14 @@ def infer_with_distance(texts):
         else:
             result.append(preds[i])
     return result
+
+
+def print_accuracy(response, prefix):
+    first_half = response[:150]
+    second_half = response[150:]
+    predict_correct = first_half.count(False) + second_half.count(True)
+    accuracy = predict_correct / 300
+    print(f'{prefix} accuracy is {accuracy}')
 
 
 if __name__ == '__main__':
@@ -109,9 +118,11 @@ if __name__ == '__main__':
 
         model_only_response = infer_model(texts)
         print(f'model only response: {model_only_response}')
+        print_accuracy(model_only_response, 'model_only_response')
 
         distance_response = infer_with_distance(texts)
         print(f'distance response: {distance_response}')
+        print_accuracy(distance_response, 'distance_response')
 
         rewards, metrics = get_rewards(labels, [model_only_response, distance_response])
         print(rewards, metrics)
