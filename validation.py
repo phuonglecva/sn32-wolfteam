@@ -82,7 +82,7 @@ def infer_distance(texts):
                 for score in list_result:
                     if score < 0.001:
                         count_hu = count_hu + 1
-                if count_hu > 2:
+                if count_hu > 1:
                     distance_result.append(False)
                     continue
 
