@@ -1,19 +1,29 @@
 # Description: This file contains the code for the validation of the model
+import time
+
 from nltk.tokenize import sent_tokenize
 
 
 def infer_model(texts: list[str]):
+    print(f'start infer_model')
+    time_start = time.time_ns()
     import requests
     url = "http://8.12.5.23:34370/predict"
     payload = {
         "list_text": texts
     }
     response = requests.request("POST", url, json=payload, timeout=120)
-    return response.json()["result"]
+    result = response.json()["result"]
+    print(f'model results: {result}')
+    time_end = time.time_ns()
+    print(f'time infer model: {(time_end - time_start) // 1000_000}')
+    return result
 
 
 def infer_distance(texts: list[str]):
     try:
+        print(f'start call infer_distance')
+        time_start = time.time_ns()
         import requests
 
         url = "http://174.92.219.240:52173/predict"
@@ -56,7 +66,13 @@ def infer_distance(texts: list[str]):
             list_index = index_for_text[i]
             list_result = [result[j] for j in list_index]
             final_result.append(min(list_result))
-        return [score < 0.001 for score in final_result]
+        distance_result = [score < 0.001 for score in final_result]
+        print(f'distance result: {distance_result}')
+        time_end = time.time_ns()
+        print(f'time processing distance: {(time_end - time_start) // 1000_000} ms')
+
+        return distance_result
+
     except Exception as e:
         print(f"Error full: {e}")
         return [False] * len(texts)
