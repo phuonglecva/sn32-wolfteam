@@ -61,6 +61,7 @@ def infer_distance(texts):
 
         # print(f"Response: {response.json()}")
         result = response.json()["result"]
+        print(f'distance score: {result}')
         final_result = []
         for i, text in enumerate(texts):
             list_index = index_for_text[i]
