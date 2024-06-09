@@ -77,9 +77,6 @@ def infer_distance(texts):
                 else:
                     ai_num_sentence_1.append(list_result[0])
 
-            print(f'human_num_sentence_1: {human_num_sentence_1}')
-            print(f'ai_num_sentence_1: {ai_num_sentence_1}')
-
             count_hu = 0
             for score in list_result:
                 if score < 0.001:
@@ -99,6 +96,8 @@ def infer_distance(texts):
 
             distance_result.append(None)
 
+        print(f'human_num_sentence_1: {human_num_sentence_1}')
+        print(f'ai_num_sentence_1: {ai_num_sentence_1}')
         print(f'distance result: {distance_result}')
         print_accuracy_distance(distance_result)
         time_end = time.time_ns()
