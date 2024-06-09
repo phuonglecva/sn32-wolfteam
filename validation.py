@@ -97,7 +97,7 @@ if __name__ == '__main__':
     from reward import get_rewards
 
     labels = [False] * 150 + [True] * 150
-    input_dir = '/root/head-tail-llm-detection/sample_data'
+    input_dir = '/root/.phuong/sample_data'
     files = os.listdir(input_dir)
     for file in files:
         file_path = os.path.join(input_dir, file)
