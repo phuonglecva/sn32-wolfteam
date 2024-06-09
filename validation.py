@@ -101,6 +101,7 @@ if __name__ == '__main__':
     files = os.listdir(input_dir)
     for file in files:
         file_path = os.path.join(input_dir, file)
+        print(f'file_path = {file_path}')
         with open(file_path, 'r') as f:
             data = json.load(f)
             texts = data['texts']
