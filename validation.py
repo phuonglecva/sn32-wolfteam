@@ -44,7 +44,7 @@ def infer_distance(texts):
                 start_i += 1
             new_texts.extend(sentences)
         # write text to file data.json
-        print(f'length_sentences = {length_sentences}')
+        # print(f'length_sentences = {length_sentences}')
         import json
         with open('data.json', 'w') as f:
             json.dump(new_texts, f, indent=2)
@@ -75,12 +75,13 @@ def infer_distance(texts):
                 distance_result.append(False)
                 continue
 
-            is_ai = True
-            for score in list_result:
-                is_ai = is_ai and (score > 0.5)
-            if is_ai:
-                distance_result.append(True)
-                continue
+            if len(list_result) > 3:
+                is_ai = True
+                for score in list_result:
+                    is_ai = is_ai and (score > 0.5)
+                if is_ai:
+                    distance_result.append(True)
+                    continue
 
             distance_result.append(None)
 
