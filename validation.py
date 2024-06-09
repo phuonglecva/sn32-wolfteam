@@ -35,7 +35,7 @@ def infer_distance(texts):
         for i, text in enumerate(texts):
             sentences = sent_tokenize(text)
             length_sentences.append(len(sentences))
-            sentences = sentences[-3:]
+            sentences = sentences[-4:]
             for _ in sentences:
                 if i not in index_for_text:
                     index_for_text[i] = []
