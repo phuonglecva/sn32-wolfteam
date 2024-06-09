@@ -44,7 +44,7 @@ def infer_distance(texts):
                 start_i += 1
             new_texts.extend(sentences)
         # write text to file data.json
-        # print(f'length_sentences = {length_sentences}')
+        print(f'length_sentences = {length_sentences}')
         import json
         with open('data.json', 'w') as f:
             json.dump(new_texts, f, indent=2)
@@ -86,9 +86,9 @@ def infer_distance(texts):
             distance_result.append(None)
 
         print(f'distance result: {distance_result}')
+        print_accuracy_distance(distance_result)
         time_end = time.time_ns()
         print(f'time processing distance: {(time_end - time_start) // 1000_000} ms')
-        print_accuracy(distance_result, 'distance_result')
 
         return distance_result
 
@@ -115,6 +115,17 @@ def print_accuracy(response, prefix):
     predict_correct = first_half.count(False) + second_half.count(True)
     accuracy = predict_correct / 300
     print(f'{prefix} accuracy is {accuracy}')
+
+
+def print_accuracy_distance(response):
+    first_half = response[:150]
+    second_half = response[150:]
+    first_wrong = first_half.count(True)
+    second_wrong = second_half.count(False)
+    print(f'accuracy_distance first_wrong is {first_wrong}')
+    print(f'accuracy_distance second_wrong is {second_wrong}')
+
+
 
 
 if __name__ == '__main__':
