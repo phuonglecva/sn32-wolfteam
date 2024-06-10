@@ -15,7 +15,15 @@ def infer_model(texts):
     response = requests.request("POST", url, json=payload, timeout=120)
     scores = response.json()["result"]
     print(f'model scores: {scores}')
-    result = [bool(score > 0.5) for score in scores]
+    result = []
+    for score in scores:
+        if score < 0.1:
+            result.append(False)
+        elif score > 0.8:
+            result.append(True)
+        else:
+            result.append(None)
+
     print(f'model results: {result}')
     time_end = time.time_ns()
     print(f'time infer model: {(time_end - time_start) // 1000_000}')
