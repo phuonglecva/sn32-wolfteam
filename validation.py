@@ -208,4 +208,4 @@ if __name__ == '__main__':
         print(rewards, metrics)
         datas.append(rewards)
         np_datas = np.array(datas)
-        print(f"model avg: {data[:, 0].mean()}, combine avg: {data[:, 1].mean()}", )
+        print(f"model avg: {np_datas[:, 0].mean()}, combine avg: {np_datas[:, 1].mean()}", )
