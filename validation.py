@@ -14,20 +14,20 @@ def infer_model(texts):
     }
     response = requests.request("POST", url, json=payload, timeout=120)
     scores = response.json()["result"]
-    print(f'model scores: {scores}')
+    # print(f'model scores: {scores}')
     result = []
     for score in scores:
-        if score < 0.1:
+        if score < 0.5:
             result.append(False)
-        elif score > 0.8:
+        elif score > 0.5:
             result.append(True)
         else:
             result.append(None)
 
     print(f'model results: {result}')
-    print(f'model count None: {result.count(None)}')
-    print(f'model fist half count None: {result[:150].count(None)}')
-    print(f'model second half count None: {result[150:].count(None)}')
+    # print(f'model count None: {result.count(None)}')
+    # print(f'model fist half count None: {result[:150].count(None)}')
+    # print(f'model second half count None: {result[150:].count(None)}')
     time_end = time.time_ns()
     print(f'time infer model: {(time_end - time_start) // 1000_000}')
     return result
@@ -180,7 +180,7 @@ if __name__ == '__main__':
     from reward import get_rewards
 
     labels = [False] * 150 + [True] * 150
-    input_dir = '/root/.phuong/sample_data'
+    input_dir = '/root/combine-method/sample_data'
     files = os.listdir(input_dir)
     for file in files:
         file_path = os.path.join(input_dir, file)
@@ -191,14 +191,14 @@ if __name__ == '__main__':
             # print(f'texts = {texts}')
 
         model_only_response = infer_model(texts)
-        print(f'model only response: {model_only_response}')
+        # print(f'model only response: {model_only_response}')
         print_accuracy(model_only_response, 'model_only_response')
 
         distance_response = infer_with_distance(texts)
         print(f'distance response: {distance_response}')
-        print(f'distance response count None: {distance_response.count(None)}')
-        print(f'distance response first half count None: {distance_response[:150].count(None)}')
-        print(f'distance response second half count None: {distance_response[150:].count(None)}')
+        # print(f'distance response count None: {distance_response.count(None)}')
+        # print(f'distance response first half count None: {distance_response[:150].count(None)}')
+        # print(f'distance response second half count None: {distance_response[150:].count(None)}')
 
         print_accuracy(distance_response, 'distance_response')
 
