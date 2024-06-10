@@ -173,6 +173,12 @@ def print_accuracy_distance(response):
     print(f'count_not_none count_not_none is {count_not_none.count(True)}')
 
 
+def cal_correct_prediction(response):
+    first_half = response[:150].count(False)
+    second_half = response[150:].count(True)
+    return first_half + second_half
+
+
 if __name__ == '__main__':
     import json
     import numpy as np
@@ -183,7 +189,9 @@ if __name__ == '__main__':
     input_dir = '/root/combine-method/sample_data'
     files = os.listdir(input_dir)
     sum_reward = [0, 0]
+    sum_correct_pred = [0, 0]
     count = 0
+
 
     for file in files:
         file_path = os.path.join(input_dir, file)
@@ -207,8 +215,13 @@ if __name__ == '__main__':
 
         rewards, metrics = get_rewards(labels, [model_only_response, distance_response])
         print(rewards, metrics)
+
         sum_reward[0] += rewards[0]
         sum_reward[1] += rewards[1]
         count += 1
+        print(f"=====> count = {count} Model reward AVG: {sum_reward[0] / count}, Combine reward AVG: {sum_reward[1] / count}", )
 
-        print(f"====> Model AVG: {sum_reward[0] / count}, Combine AVG: {sum_reward[1] / count}", )
+        sum_correct_pred[0] += cal_correct_prediction(model_only_response)
+        sum_correct_pred[1] += cal_correct_prediction(distance_response)
+        sum_text = count * 300
+        print(f"------> count = {count} Model correct pred AVG: {sum_correct_pred[0] / sum_text}, Combine correct pred AVG: {sum_correct_pred[1] / sum_text}", )
