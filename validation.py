@@ -13,7 +13,9 @@ def infer_model(texts):
         "list_text": texts
     }
     response = requests.request("POST", url, json=payload, timeout=120)
-    result = response.json()["result"]
+    scores = response.json()["result"]
+    print(f'model scores: {scores}')
+    result = [bool(score > 0.5) for score in scores]
     print(f'model results: {result}')
     time_end = time.time_ns()
     print(f'time infer model: {(time_end - time_start) // 1000_000}')
