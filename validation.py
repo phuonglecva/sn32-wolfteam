@@ -196,6 +196,10 @@ if __name__ == '__main__':
 
         distance_response = infer_with_distance(texts)
         print(f'distance response: {distance_response}')
+        print(f'distance response count None: {distance_response.count(None)}')
+        print(f'distance response first half count None: {distance_response[:150].count(None)}')
+        print(f'distance response second half count None: {distance_response[150:].count(None)}')
+
         print_accuracy(distance_response, 'distance_response')
 
         rewards, metrics = get_rewards(labels, [model_only_response, distance_response])
