@@ -25,6 +25,9 @@ def infer_model(texts):
             result.append(None)
 
     print(f'model results: {result}')
+    print(f'model count None: {result.count(None)}')
+    print(f'model fist half count None: {result[:150].count(None)}')
+    print(f'model second half count None: {result[150:].count(None)}')
     time_end = time.time_ns()
     print(f'time infer model: {(time_end - time_start) // 1000_000}')
     return result
