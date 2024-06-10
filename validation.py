@@ -182,6 +182,8 @@ if __name__ == '__main__':
     labels = [False] * 150 + [True] * 150
     input_dir = '/root/combine-method/sample_data'
     files = os.listdir(input_dir)
+    datas = []
+
     for file in files:
         file_path = os.path.join(input_dir, file)
         print(f'file_path = {file_path}')
@@ -204,3 +206,6 @@ if __name__ == '__main__':
 
         rewards, metrics = get_rewards(labels, [model_only_response, distance_response])
         print(rewards, metrics)
+        datas.append(rewards)
+        np_datas = np.array(datas)
+        print(f"model avg: {data[:, 0].mean()}, combine avg: {data[:, 1].mean()}", )
