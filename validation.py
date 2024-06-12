@@ -32,11 +32,14 @@ def infer_model(texts):
     print(f'time infer model: {(time_end - time_start) // 1000_000}')
     return result
 
-def call_distance_api(texts):
+
+def call_distance_api(texts, url=None):
     time_start = time.time_ns()
     import requests
 
-    url = "http://174.92.219.240:52163/predict"
+    if url is None:
+        url = "http://174.92.219.240:52163/predict"
+
     try:
         headers = {
             'Content-Type': 'application/json'
@@ -51,6 +54,26 @@ def call_distance_api(texts):
     except Exception as e:
         print(f"Error: {e}")
         return None
+
+
+def call_distance_api_multi_process(texts):
+    time_start = time.time_ns()
+
+    urls = [
+        "http://174.92.219.240:52163/predict",
+        "http://174.92.219.240:52159/predict",
+        "http://174.92.219.240:52109/predict"
+    ]
+    import concurrent.futures
+    max_workers = 10
+    with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+        futures = [executor.submit(call_distance_api, texts, url) for url in urls]
+        response = [future.result() for future in futures]
+        time_end = time.time_ns()
+        print(f'time processing distance of {len(texts)} sentences: {(time_end - time_start) // 1000_000} ms')
+
+    result = [min(response[0][i], response[1][i], response[2][i]) for i in range(len(texts))]
+    return result
 
 
 def infer_distance(texts):
@@ -78,7 +101,8 @@ def infer_distance(texts):
         with open('data.json', 'w') as f:
             json.dump(new_texts, f, indent=2)
 
-        response = call_distance_api(new_texts)
+        # response = call_distance_api(new_texts)
+        response = call_distance_api_multi_process(new_texts)
         if response is None:
             return [False] * len(texts)
 
