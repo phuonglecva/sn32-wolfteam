@@ -8,9 +8,7 @@ def infer_model(texts):
     print(f'start infer_model')
     time_start = time.time_ns()
     import requests
-    # url = "http://8.12.5.23:34370/predict" # port 8888
-    url = "http://8.12.5.23:36381/predict"  # port 6006
-
+    url = "http://8.12.5.23:34370/predict"
     payload = {
         "list_text": texts
     }
@@ -194,6 +192,7 @@ if __name__ == '__main__':
     sum_correct_pred = [0, 0]
     count = 0
 
+
     for file in files:
         file_path = os.path.join(input_dir, file)
         print(f'file_path = {file_path}')
@@ -220,11 +219,9 @@ if __name__ == '__main__':
         sum_reward[0] += rewards[0]
         sum_reward[1] += rewards[1]
         count += 1
-        print(
-            f"=====> count = {count} Model reward AVG: {sum_reward[0] / count}, Combine reward AVG: {sum_reward[1] / count}", )
+        print(f"=====> count = {count} Model reward AVG: {sum_reward[0] / count}, Combine reward AVG: {sum_reward[1] / count}", )
 
         sum_correct_pred[0] += cal_correct_prediction(model_only_response)
         sum_correct_pred[1] += cal_correct_prediction(distance_response)
         sum_text = count * 300
-        print(
-            f"------> count = {count} Model correct pred AVG: {sum_correct_pred[0] / sum_text}, Combine correct pred AVG: {sum_correct_pred[1] / sum_text}", )
+        print(f"------> count = {count} Model correct pred AVG: {sum_correct_pred[0] / sum_text}, Combine correct pred AVG: {sum_correct_pred[1] / sum_text}", )
