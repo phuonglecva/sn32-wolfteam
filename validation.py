@@ -32,14 +32,31 @@ def infer_model(texts):
     print(f'time infer model: {(time_end - time_start) // 1000_000}')
     return result
 
+def call_distance_api(texts):
+    time_start = time.time_ns()
+    import requests
+
+    url = "http://174.92.219.240:52163/predict"
+    try:
+        headers = {
+            'Content-Type': 'application/json'
+        }
+        payload = json.dumps({
+            "list_text": texts
+        })
+        response = requests.post(url, data=payload, headers=headers, timeout=120)
+        time_end = time.time_ns()
+        print(f'time processing distance of {len(texts)} sentences: {(time_end - time_start) // 1000_000} ms')
+        return response
+    except Exception as e:
+        print(f"Error: {e}")
+        return None
+
 
 def infer_distance(texts):
     try:
         print(f'start call infer_distance')
         time_start = time.time_ns()
-        import requests
-
-        url = "http://174.92.219.240:52173/predict"
 
         new_texts = []
         index_for_text = {}
@@ -53,30 +70,21 @@ def infer_distance(texts):
                 if i not in index_for_text:
                     index_for_text[i] = []
                 index_for_text[i].append(start_i)
-                # print(index_for_text)
                 start_i += 1
             new_texts.extend(sentences)
-        # write text to file data.json
+
         print(f'length_sentences = {length_sentences}')
         import json
         with open('data.json', 'w') as f:
             json.dump(new_texts, f, indent=2)
-        # print(f"Length of new texts: {len(new_texts)}")
-        try:
-            headers = {
-                'Content-Type': 'application/json'
-            }
-            payload = json.dumps({
-                "list_text": new_texts
-            })
-            response = requests.post(url, data=payload, headers=headers, timeout=120)
-        except Exception as e:
-            print(f"Error: {e}")
+
+        response = call_distance_api(new_texts)
+        if response is None:
             return [False] * len(texts)
 
-        # print(f"Response: {response.json()}")
         result = response.json()["result"]
         print(f'distance score: {result}')
+
         distance_result = []
         human_num_sentence_1_score = []
         ai_num_sentence_1_score = []
@@ -132,8 +140,9 @@ def infer_distance(texts):
 
         print(f'distance result: {distance_result}')
         print_accuracy_distance(distance_result)
+
         time_end = time.time_ns()
-        print(f'time processing distance: {(time_end - time_start) // 1000_000} ms')
+        print(f'time process infer_distance of {len(texts)} sentences: {(time_end - time_start) // 1000_000} ms')
 
         return distance_result
 
@@ -192,7 +201,6 @@ if __name__ == '__main__':
     sum_correct_pred = [0, 0]
     count = 0
 
-
     for file in files:
         file_path = os.path.join(input_dir, file)
         print(f'file_path = {file_path}')
@@ -219,9 +227,11 @@ if __name__ == '__main__':
         sum_reward[0] += rewards[0]
         sum_reward[1] += rewards[1]
         count += 1
-        print(f"=====> count = {count} Model reward AVG: {sum_reward[0] / count}, Combine reward AVG: {sum_reward[1] / count}", )
+        print(
+            f"=====> count = {count} Model reward AVG: {sum_reward[0] / count}, Combine reward AVG: {sum_reward[1] / count}", )
 
         sum_correct_pred[0] += cal_correct_prediction(model_only_response)
         sum_correct_pred[1] += cal_correct_prediction(distance_response)
         sum_text = count * 300
-        print(f"------> count = {count} Model correct pred AVG: {sum_correct_pred[0] / sum_text}, Combine correct pred AVG: {sum_correct_pred[1] / sum_text}", )
+        print(
+            f"------> count = {count} Model correct pred AVG: {sum_correct_pred[0] / sum_text}, Combine correct pred AVG: {sum_correct_pred[1] / sum_text}", )
