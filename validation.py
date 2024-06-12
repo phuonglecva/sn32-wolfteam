@@ -47,7 +47,7 @@ def call_distance_api(texts, url=None):
         payload = json.dumps({
             "list_text": texts
         })
-        response = requests.post(url, data=payload, headers=headers, timeout=120)
+        response = requests.post(url, data=payload, headers=headers, timeout=360)
         time_end = time.time_ns()
         print(f'time processing distance of {len(texts)} sentences: {(time_end - time_start) // 1000_000} ms')
         return response
