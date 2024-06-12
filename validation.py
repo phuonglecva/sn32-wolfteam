@@ -68,11 +68,13 @@ def call_distance_api_multi_process(texts):
     max_workers = 10
     with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
         futures = [executor.submit(call_distance_api, texts, url) for url in urls]
-        response = [future.result() for future in futures]
-        time_end = time.time_ns()
-        print(f'time processing distance of {len(texts)} sentences: {(time_end - time_start) // 1000_000} ms')
+        responses = [future.result() for future in futures]
+        scores = [response.json()["result"] for response in responses]
 
-    result = [min(response[0][i], response[1][i], response[2][i]) for i in range(len(texts))]
+    result = [min(scores[0][i], scores[1][i], scores[2][i]) for i in range(len(texts))]
+
+    time_end = time.time_ns()
+    print(f'time processing distance of {len(texts)} sentences: {(time_end - time_start) // 1000_000} ms')
     return result
 
 
