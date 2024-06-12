@@ -69,6 +69,7 @@ def call_distance_api_multi_process(texts):
     with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
         futures = [executor.submit(call_distance_api, texts, url) for url in urls]
         responses = [future.result() for future in futures]
+        print(f'****** responses = {responses}')
         scores = [response.json()["result"] for response in responses]
 
     result = [min(scores[0][i], scores[1][i], scores[2][i]) for i in range(len(texts))]
