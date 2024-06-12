@@ -58,11 +58,10 @@ def call_distance_api(texts, url=None):
 
 def call_distance_api_multi_process(texts):
     time_start = time.time_ns()
-
     urls = [
         "http://174.92.219.240:52163/predict",
-        "http://174.92.219.240:52159/predict",
-        "http://174.92.219.240:52109/predict"
+        "http://173.231.62.170:40042/predict",
+        "http://174.92.219.240:52112/predict"
     ]
     import concurrent.futures
     max_workers = 10
