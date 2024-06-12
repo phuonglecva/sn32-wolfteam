@@ -50,10 +50,10 @@ def call_distance_api(texts, url=None):
         response = requests.post(url, data=payload, headers=headers, timeout=360)
         time_end = time.time_ns()
         print(f'time processing distance of {len(texts)} sentences: {(time_end - time_start) // 1000_000} ms')
-        return response
+        return response.json()["result"]
     except Exception as e:
         print(f"Error: {e}")
-        return None
+        return [False] * len(texts)
 
 
 def call_distance_api_multi_process(texts):
@@ -68,9 +68,8 @@ def call_distance_api_multi_process(texts):
     max_workers = 10
     with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
         futures = [executor.submit(call_distance_api, texts, url) for url in urls]
-        responses = [future.result() for future in futures]
-        print(f'****** responses = {responses}')
-        scores = [response.json()["result"] for response in responses]
+        scores = [future.result() for future in futures]
+        print(f'****** scores = {scores}')
 
     result = [min(scores[0][i], scores[1][i], scores[2][i]) for i in range(len(texts))]
 
@@ -104,12 +103,8 @@ def infer_distance(texts):
         with open('data.json', 'w') as f:
             json.dump(new_texts, f, indent=2)
 
-        # response = call_distance_api(new_texts)
-        response = call_distance_api_multi_process(new_texts)
-        if response is None:
-            return [False] * len(texts)
-
-        result = response.json()["result"]
+        # result = call_distance_api(new_texts)
+        result = call_distance_api_multi_process(new_texts)
         print(f'distance score: {result}')
 
         distance_result = []
