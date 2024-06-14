@@ -38,7 +38,7 @@ def call_distance_api(texts, url=None):
     import requests
 
     if url is None:
-        url = "http://174.92.219.240:52163/predict"
+        url = "http://173.231.62.170:40042/predict"
 
     try:
         headers = {
@@ -127,8 +127,8 @@ def infer_distance(texts):
         with open('data.json', 'w') as f:
             json.dump(new_texts, f, indent=2)
 
-        # result = call_distance_api(new_texts)
-        result = call_distance_api_multi_process(new_texts)
+        result = call_distance_api(new_texts)
+        # result = call_distance_api_multi_process(new_texts)
         print(f'distance score: {result}')
 
         distance_result = []
