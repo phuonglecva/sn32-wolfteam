@@ -8,7 +8,7 @@ def infer_model(texts):
     print(f'start infer_model')
     time_start = time.time_ns()
     import requests
-    url = "http://8.12.5.23:34370/predict"
+    url = "http://174.92.219.240:52135/predict"
     payload = {
         "list_text": texts
     }
