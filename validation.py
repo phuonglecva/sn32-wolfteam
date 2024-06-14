@@ -38,7 +38,7 @@ def call_distance_api(texts, url=None):
     import requests
 
     if url is None:
-        url = "http://173.231.62.170:40042/predict"
+        url = "http://174.92.219.240:52159/predict"
 
     try:
         headers = {
