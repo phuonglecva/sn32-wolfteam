@@ -154,7 +154,7 @@ def infer_distance(texts):
 
             count_hu = 0
             for score in list_result:
-                if score < 0.001:
+                if score < 0.1:
                     count_hu = count_hu + 1
             if count_hu == len(list_result):
                 distance_result.append(False)
@@ -163,17 +163,17 @@ def infer_distance(texts):
             if length_sentences[i] > 1:
                 count_ai = 0
                 for score in list_result:
-                    if score > 0.05:
+                    if score > 0.2:
                         count_ai = count_ai + 1
                 if count_ai > 1:
                     distance_result.append(True)
                     continue
 
             if length_sentences[i] == 2:
-                if list_result[0] > 0.1 and list_result[1] < 0.001:
+                if list_result[0] > 0.2 and list_result[1] < 0.1:
                     distance_result.append(False)
                     continue
-                elif list_result[0] > 0.1 and list_result[1] > 0.1:
+                elif list_result[0] > 0.2 and list_result[1] > 0.2:
                     distance_result.append(True)
                     continue
 
