@@ -39,7 +39,7 @@ def call_distance_api(texts, url=None):
 
     if url is None:
         url = "http://174.92.219.240:52159/predict"
-
+    print(f'call distance api: {url}')
     try:
         headers = {
             'Content-Type': 'application/json'
