@@ -78,6 +78,7 @@ def call_distance_api_multi_process(texts):
 
 
 def infer_with_distance(texts):
+    print(f'test freelancers solution')
     distances = infer_distance(texts)
     preds = infer_model(texts)
     result = {i: None for i in range(len(texts))}
