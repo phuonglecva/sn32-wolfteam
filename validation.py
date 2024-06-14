@@ -77,6 +77,30 @@ def call_distance_api_multi_process(texts):
     return result
 
 
+def infer_with_distance(texts):
+    distances = infer_distance(texts)
+    preds = infer_model(texts)
+    result = {i: None for i in range(len(texts))}
+    preds_confs = {}
+    for i in range(len(texts)):
+        if distances[i] is not None:
+            result[i] = distances[i]
+    else:
+        preds_confs[i] = preds[i]
+
+    ai_count = len(list(filter(lambda x: x is True, result.values())))
+    human_count = len(list(filter(lambda x: x is False, result.values())))
+
+    sorted_preds_confs = sorted(preds_confs, key=preds_confs.get)
+
+    for i in range(0, 150 - human_count):
+        result[sorted_preds_confs[i]] = False
+
+    for i in range(150 - human_count, len(sorted_preds_confs)):
+        result[sorted_preds_confs[i]] = True
+    return list(result.values())
+
+
 def infer_distance(texts):
     try:
         print(f'start call infer_distance')
@@ -172,7 +196,7 @@ def infer_distance(texts):
         return [False] * len(texts)
 
 
-def infer_with_distance(texts):
+def infer_with_distance_backup(texts):
     distances = infer_distance(texts)
     preds = infer_model(texts)
     result = []
