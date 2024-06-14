@@ -86,8 +86,8 @@ def infer_with_distance(texts):
     for i in range(len(texts)):
         if distances[i] is not None:
             result[i] = distances[i]
-    else:
-        preds_confs[i] = preds[i]
+        else:
+            preds_confs[i] = preds[i]
 
     ai_count = len(list(filter(lambda x: x is True, result.values())))
     human_count = len(list(filter(lambda x: x is False, result.values())))
