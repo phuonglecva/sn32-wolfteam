@@ -1,0 +1,34 @@
+{
+  "application": {
+    "validator_pile": {
+      "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3": 2,
+      "5HEo565WAy4Dbq3Sv271SAi7syBSofyfhhwRNjFNSM2gP9M2": 25,
+      "5CaNj3BarTHotEK1n513aoTtFeXcjf6uvKzAyzNuv9cirUoW": 22,
+      "5HK5tp6t2S59DywmHRWPBVJeJ86T61KjurYqeooqj8sREpeN": 10,
+      "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v": 7,
+      "5EhvL1FVkQPpMjZX4MAADcW42i3xPSF1KiCpuaxTYVr28sux": 18,
+      "5Dd8gaRNdhm1YP7G1hcB1N842ecAUQmbLjCRLqH5ycaTGrWv": 12,
+      "5DvTpiniW9s3APmHRYn8FroUWyfnLtrsid5Mtn5EwMXHN2ed": 14,
+      "5HbLYXUBy1snPR8nfioQ7GoA9x76EELzEq9j7F32vWUQHm1x": 24,
+      "5Hp18g9P8hLGKp9W3ZDr4bvJwba6b6bY3P2u3VdYf8yMR8FM": 9,
+      "5CXRfP2ekFhe62r7q3vppRajJmGhTi7vwvb2yr79jveZ282w": "",
+      "5HNQURvmjjYhTSksi8Wfsw676b4owGwfLR2BFAQzG7H3HhYf": "50text",
+      "5CXC2quDN5nUTqHMkpP5YRp2atYYicvtUghAYLj15gaUFwe5": 5
+    },
+    "pile_server": {
+      "1": "http://localhost:8080/predict",
+      "2": "http://localhost:8888/predict",
+      "3": "http://localhost:6006/predict"
+    },
+    "model": {
+      "url": "http://localhost:8068/predict",
+      "time_out": 10
+    },
+    "nns": {
+      "time_out": 10,
+      "ai_threshold": 0.2,
+      "human_threshold": 0.1
+    }
+  }
+}
+

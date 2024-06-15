@@ -1,25 +1,29 @@
 # Description: This file contains the code for the validation of the model
 import time
 
+import requests
 from nltk.tokenize import sent_tokenize
+
+from app_config import AppConfig
+
+APP_CONFIG = AppConfig()
 
 
 def infer_model(texts):
-    print(f'start infer_model')
+    print(f'start infer_model of {len(texts)} texts')
     time_start = time.time_ns()
-    import requests
-    url = "http://174.92.219.240:52135/predict"
+    url = APP_CONFIG.get_model_server_url()
     payload = {
         "list_text": texts
     }
-    response = requests.request("POST", url, json=payload, timeout=120)
+    response = requests.request("POST", url, json=payload, timeout=APP_CONFIG.get_model_timeout())
     scores = response.json()["result"]
     # print(f'model scores: {scores}')
     result = []
     for score in scores:
         if score < 0.5:
             result.append(False)
-        elif score > 0.5:
+        elif score >= 0.5:
             result.append(True)
         else:
             result.append(None)
@@ -33,53 +37,57 @@ def infer_model(texts):
     return result
 
 
-def call_distance_api(texts, url=None):
+def call_distance_api(sentences, url=None):
     time_start = time.time_ns()
-    import requests
-
-    if url is None:
-        url = "http://174.92.219.240:52109/predict"
     print(f'call distance api: {url}')
     try:
         headers = {
             'Content-Type': 'application/json'
         }
         payload = json.dumps({
-            "list_text": texts
+            "list_text": sentences
         })
-        response = requests.post(url, data=payload, headers=headers, timeout=360)
+        response = requests.post(url, data=payload, headers=headers, timeout=APP_CONFIG.get_nns_timeout())
         time_end = time.time_ns()
-        print(f'time processing distance of {len(texts)} sentences: {(time_end - time_start) // 1000_000} ms')
+        print(f'time processing distance of {len(sentences)} sentences: {(time_end - time_start) // 1000_000} ms')
         return response.json()["result"]
     except Exception as e:
         print(f"Error: {e}")
-        return [False] * len(texts)
+        return [-1] * len(sentences)
 
 
-def call_distance_api_multi_process(texts):
-    time_start = time.time_ns()
-    urls = [
-        "http://174.92.219.240:52163/predict",
-        "http://173.231.62.170:40042/predict",
-        "http://174.92.219.240:52112/predict"
-    ]
-    import concurrent.futures
-    max_workers = 10
-    with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
-        futures = [executor.submit(call_distance_api, texts, url) for url in urls]
-        scores = [future.result() for future in futures]
-        print(f'****** scores = {scores}')
+# def call_distance_api_multi_process(texts):
+#     time_start = time.time_ns()
+#     urls = [
+#         "http://174.92.219.240:52163/predict",
+#         "http://173.231.62.170:40042/predict",
+#         "http://174.92.219.240:52112/predict"
+#     ]
+#     import concurrent.futures
+#     max_workers = 10
+#     with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+#         futures = [executor.submit(call_distance_api, texts, url) for url in urls]
+#         scores = [future.result() for future in futures]
+#         print(f'****** scores = {scores}')
+#
+#     result = [min(scores[0][i], scores[1][i], scores[2][i]) for i in range(len(texts))]
+#
+#     time_end = time.time_ns()
+#     print(f'time processing distance of {len(texts)} sentences: {(time_end - time_start) // 1000_000} ms')
+#     return result
 
-    result = [min(scores[0][i], scores[1][i], scores[2][i]) for i in range(len(texts))]
 
-    time_end = time.time_ns()
-    print(f'time processing distance of {len(texts)} sentences: {(time_end - time_start) // 1000_000} ms')
-    return result
+def predict_texts(texts, validator_hotkey=None):
+    APP_CONFIG.load_app_config()
+    len_texts = len(texts)
+    if len_texts == 300:
+        return infer_with_distance(texts, validator_hotkey)
+    else:
+        return infer_model(texts)
 
 
-def infer_with_distance(texts):
-    print(f'test freelancers solution')
-    distances = infer_distance(texts)
+def infer_with_distance(texts, validator_hotkey=None):
+    distances = infer_distance(texts, validator_hotkey)
     preds = infer_model(texts)
     result = {i: None for i in range(len(texts))}
     preds_confs = {}
@@ -102,9 +110,13 @@ def infer_with_distance(texts):
     return list(result.values())
 
 
-def infer_distance(texts):
+def get_url_by_validator_hotkey(validator_hotkey):
+    return APP_CONFIG.get_nns_server_url(validator_hotkey)
+
+
+def infer_distance(texts, validator_hotkey=None):
     try:
-        print(f'start call infer_distance')
+        print(f'start call infer_distance of {len(texts)}, validator hotkey = {validator_hotkey}')
         time_start = time.time_ns()
 
         new_texts = []
@@ -123,38 +135,24 @@ def infer_distance(texts):
             new_texts.extend(sentences)
 
         print(f'length_sentences = {length_sentences}')
-        import json
-        with open('data.json', 'w') as f:
-            json.dump(new_texts, f, indent=2)
+        url = get_url_by_validator_hotkey(validator_hotkey)
+        if url is None:
+            return [None] * len(texts)
 
-        result = call_distance_api(new_texts)
+        result = call_distance_api(new_texts, url)
         # result = call_distance_api_multi_process(new_texts)
         print(f'distance score: {result}')
 
         distance_result = []
-        human_num_sentence_1_score = []
-        ai_num_sentence_1_score = []
 
-        human_num_sentence_2_score = []
-        ai_num_sentence_2_score = []
-
+        human_threshold = APP_CONFIG.get_nns_hu_threshold()
+        ai_threshold = APP_CONFIG.get_nns_ai_threshold()
         for i, text in enumerate(texts):
             list_index = index_for_text[i]
             list_result = [result[j] for j in list_index]
-            if length_sentences[i] == 1:
-                if i < 150:
-                    human_num_sentence_1_score.append(list_result)
-                else:
-                    ai_num_sentence_1_score.append(list_result)
-            if length_sentences[i] == 2:
-                if i < 150:
-                    human_num_sentence_2_score.append(list_result)
-                else:
-                    ai_num_sentence_2_score.append(list_result)
-
             count_hu = 0
             for score in list_result:
-                if score < 0.1:
+                if score < human_threshold:
                     count_hu = count_hu + 1
             if count_hu == len(list_result):
                 distance_result.append(False)
@@ -163,26 +161,21 @@ def infer_distance(texts):
             if length_sentences[i] > 1:
                 count_ai = 0
                 for score in list_result:
-                    if score > 0.2:
+                    if score > ai_threshold:
                         count_ai = count_ai + 1
                 if count_ai > 1:
                     distance_result.append(True)
                     continue
 
             if length_sentences[i] == 2:
-                if list_result[0] > 0.2 and list_result[1] < 0.1:
+                if list_result[0] > ai_threshold and list_result[1] < human_threshold:
                     distance_result.append(False)
                     continue
-                elif list_result[0] > 0.2 and list_result[1] > 0.2:
+                elif list_result[0] > ai_threshold and list_result[1] > ai_threshold:
                     distance_result.append(True)
                     continue
 
             distance_result.append(None)
-
-        print(f'human_num_sentence_1_score: {human_num_sentence_1_score}')
-        print(f'ai_num_sentence_1_score: {ai_num_sentence_1_score}')
-        print(f'human_num_sentence_2_score: {human_num_sentence_2_score}')
-        print(f'ai_num_sentence_2_score: {ai_num_sentence_2_score}')
 
         print(f'distance result: {distance_result}')
         print_accuracy_distance(distance_result)
@@ -194,20 +187,18 @@ def infer_distance(texts):
 
     except Exception as e:
         print(f"Error full: {e}")
-        return [False] * len(texts)
+        return [None] * len(texts)
 
-
-def infer_with_distance_backup(texts):
-    distances = infer_distance(texts)
-    preds = infer_model(texts)
-    result = []
-    for i in range(len(distances)):
-        if distances[i] is not None:
-            result.append(distances[i])
-        else:
-            result.append(preds[i])
-    return result
-
+# def infer_with_distance_backup(texts):
+#     distances = infer_distance(texts)
+#     preds = infer_model(texts)
+#     result = []
+#     for i in range(len(distances)):
+#         if distances[i] is not None:
+#             result.append(distances[i])
+#         else:
+#             result.append(preds[i])
+#     return result
 
 def print_accuracy(response, prefix):
     first_half = response[:150]
@@ -236,7 +227,6 @@ def cal_correct_prediction(response):
 
 if __name__ == '__main__':
     import json
-    import numpy as np
     import os
     from reward import get_rewards
 
