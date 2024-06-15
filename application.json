@@ -13,15 +13,17 @@
       "5Hp18g9P8hLGKp9W3ZDr4bvJwba6b6bY3P2u3VdYf8yMR8FM": 9,
       "5CXRfP2ekFhe62r7q3vppRajJmGhTi7vwvb2yr79jveZ282w": "",
       "5HNQURvmjjYhTSksi8Wfsw676b4owGwfLR2BFAQzG7H3HhYf": "50text",
-      "5CXC2quDN5nUTqHMkpP5YRp2atYYicvtUghAYLj15gaUFwe5": 5
+      "5CXC2quDN5nUTqHMkpP5YRp2atYYicvtUghAYLj15gaUFwe5": 5,
+      "TEST": 1000
     },
     "pile_server": {
       "1": "http://localhost:8080/predict",
       "2": "http://localhost:8888/predict",
-      "3": "http://localhost:6006/predict"
+      "3": "http://localhost:6006/predict",
+      "1000": "http://174.92.219.240:52159/predict"
     },
     "model": {
-      "url": "http://localhost:8068/predict",
+      "url": "http://174.92.219.240:52135/predict",
       "time_out": 10
     },
     "nns": {

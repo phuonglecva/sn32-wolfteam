@@ -189,6 +189,7 @@ def infer_distance(texts, validator_hotkey=None):
         print(f"Error full: {e}")
         return [None] * len(texts)
 
+
 # def infer_with_distance_backup(texts):
 #     distances = infer_distance(texts)
 #     preds = infer_model(texts)
@@ -249,7 +250,7 @@ if __name__ == '__main__':
         # print(f'model only response: {model_only_response}')
         print_accuracy(model_only_response, 'model_only_response')
 
-        distance_response = infer_with_distance(texts)
+        distance_response = infer_with_distance(texts, "TEST")
         print(f'distance response: {distance_response}')
         # print(f'distance response count None: {distance_response.count(None)}')
         # print(f'distance response first half count None: {distance_response[:150].count(None)}')
