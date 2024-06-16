@@ -102,7 +102,7 @@ def infer_with_distance(texts, validator_hotkey=None):
     print(f'human_count = {human_count}, ai_count = {ai_count}')
 
     sorted_preds_confs = sorted(preds_confs, key=preds_confs.get)
-    print(f'sorted_preds_confs len = {len(sorted_preds_confs), sorted_preds_confs: {sorted_preds_confs}}')
+    print(f'sorted_preds_confs len = {len(sorted_preds_confs)}, sorted_preds_confs: {sorted_preds_confs}')
 
     for i in range(0, 150 - human_count):
         result[sorted_preds_confs[i]] = False
