@@ -65,7 +65,7 @@ def call_distance_api_multi_process(texts):
     with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
         futures = [executor.submit(call_distance_api, texts, url) for url in urls]
         scores = [future.result() for future in futures]
-        print(f'****** scores = {scores}')
+        # print(f'****** scores = {scores}')
 
     result = [min(values) for values in zip(*scores)]
     time_end = time.time_ns()
