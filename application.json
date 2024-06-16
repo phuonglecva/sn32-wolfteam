@@ -20,7 +20,7 @@
       "1": "http://localhost:8080/predict",
       "2": "http://localhost:8888/predict",
       "3": "http://localhost:6006/predict",
-      "1000": "http://174.92.219.240:52159/predict"
+      "1000": "http://174.92.219.240:52109/predict"
     },
     "model": {
       "url": "http://174.92.219.240:52135/predict",
