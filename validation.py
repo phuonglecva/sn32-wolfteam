@@ -66,7 +66,8 @@ def call_distance_api_multi_process(texts):
         futures = [executor.submit(call_distance_api, texts, url) for url in urls]
         scores = [future.result() for future in futures]
         # print(f'****** scores = {scores}')
-
+    print(f'scores len: {len(scores)}')
+    print(f'scores[0] len: {len(scores[0])}')
     result = [min(values) for values in zip(*scores)]
     time_end = time.time_ns()
     print(f'time processing distance of {len(texts)} sentences: {(time_end - time_start) // 1000_000} ms')
