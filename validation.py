@@ -56,25 +56,21 @@ def call_distance_api(sentences, url=None):
         return [-1] * len(sentences)
 
 
-# def call_distance_api_multi_process(texts):
-#     time_start = time.time_ns()
-#     urls = [
-#         "http://174.92.219.240:52163/predict",
-#         "http://173.231.62.170:40042/predict",
-#         "http://174.92.219.240:52112/predict"
-#     ]
-#     import concurrent.futures
-#     max_workers = 10
-#     with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
-#         futures = [executor.submit(call_distance_api, texts, url) for url in urls]
-#         scores = [future.result() for future in futures]
-#         print(f'****** scores = {scores}')
-#
-#     result = [min(scores[0][i], scores[1][i], scores[2][i]) for i in range(len(texts))]
-#
-#     time_end = time.time_ns()
-#     print(f'time processing distance of {len(texts)} sentences: {(time_end - time_start) // 1000_000} ms')
-#     return result
+def call_distance_api_multi_process(texts):
+    print(f'start call_distance_api_multi_process len(texts) = {len(texts)}')
+    time_start = time.time_ns()
+    urls = APP_CONFIG.get_all_nns_server_url()
+    import concurrent.futures
+    max_workers = 10
+    with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
+        futures = [executor.submit(call_distance_api, texts, url) for url in urls]
+        scores = [future.result() for future in futures]
+        print(f'****** scores = {scores}')
+
+    result = [min(values) for values in zip(*scores)]
+    time_end = time.time_ns()
+    print(f'time processing distance of {len(texts)} sentences: {(time_end - time_start) // 1000_000} ms')
+    return result
 
 
 def predict_texts(texts, validator_hotkey=None):
@@ -100,6 +96,8 @@ def infer_with_distance(texts, validator_hotkey=None):
     ai_count = len(list(filter(lambda x: x is True, result.values())))
     human_count = len(list(filter(lambda x: x is False, result.values())))
     print(f'human_count = {human_count}, ai_count = {ai_count}')
+    if ai_count > 150 or human_count > 150:
+        return preds
 
     sorted_preds_confs = sorted(preds_confs, key=preds_confs.get)
     print(f'sorted_preds_confs len = {len(sorted_preds_confs)}, sorted_preds_confs: {sorted_preds_confs}')
@@ -137,12 +135,12 @@ def infer_distance(texts, validator_hotkey=None):
             new_texts.extend(sentences)
 
         print(f'length_sentences = {length_sentences}')
-        url = get_url_by_validator_hotkey(validator_hotkey)
-        if url is None:
-            return [None] * len(texts)
+        # url = get_url_by_validator_hotkey(validator_hotkey)
+        # if url is None:
+        #     return [None] * len(texts)
 
-        result = call_distance_api(new_texts, url)
-        # result = call_distance_api_multi_process(new_texts)
+        # result = call_distance_api(new_texts, url)
+        result = call_distance_api_multi_process(new_texts)
         print(f'distance score: {result}')
 
         distance_result = []

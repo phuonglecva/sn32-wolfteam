@@ -94,6 +94,21 @@ class AppConfig(ABC):
             traceback.print_exc()
         return None
 
+    def get_all_nns_server_url(self):
+        try:
+            server_dict = self.value['application']['pile_server']
+            urls = []
+            for i in range(1, 30):
+                url = server_dict[str(i)]
+                if url is not None and len(url) > 1:
+                    urls.append(url)
+
+            return urls
+        except Exception as e:
+            print(e)
+            traceback.print_exc()
+        return []
+
     def get_model_server_url(self):
         try:
             return self.value['application']['model']['url']
@@ -125,7 +140,8 @@ if __name__ == '__main__':
     print('get_nns_hu_threshold', app_config.get_nns_hu_threshold())
     print('get_nns_server_url', app_config.get_nns_server_url("5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"))
     print('get_model_server_url', app_config.get_model_server_url())
-
+    print('get_all_nns_server_url', app_config.get_all_nns_server_url())
+    print(f'get_all_nns_server_url length: {len(app_config.get_all_nns_server_url())}')
 
     while True:
         ...
