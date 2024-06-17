@@ -88,7 +88,7 @@ def call_distance_api_and_model_api(texts, sentences, url):
         return infer_model(texts)
 
 
-def get_distance_result(index_for_text, result, length_sentences):
+def get_distance_result(index_for_text, result, length_sentences,texts):
     distance_result = []
 
     human_threshold = APP_CONFIG.get_nns_hu_threshold()
@@ -196,7 +196,7 @@ def infer_distance(texts, validator_hotkey=None):
         hit_pile = []
         for i in range(len(scores)):
             result = scores[i]
-            hit = get_distance_result(index_for_text, result, length_sentences)
+            hit = get_distance_result(index_for_text, result, length_sentences,texts)
             if hit:
                 hit_pile.append(i)
 
