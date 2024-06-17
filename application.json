@@ -54,10 +54,10 @@
     },
     "model": {
       "url": "http://174.92.219.240:52135/predict",
-      "time_out": 10
+      "time_out": 12
     },
     "nns": {
-      "time_out": 120,
+      "time_out": 12,
       "ai_threshold": 0.2,
       "human_threshold": 0.1
     }
