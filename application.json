@@ -1,19 +1,19 @@
 {
   "application": {
     "validator_pile": {
-      "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3": 25,
-      "5HEo565WAy4Dbq3Sv271SAi7syBSofyfhhwRNjFNSM2gP9M2": 24,
-      "5CaNj3BarTHotEK1n513aoTtFeXcjf6uvKzAyzNuv9cirUoW": 25,
-      "5HK5tp6t2S59DywmHRWPBVJeJ86T61KjurYqeooqj8sREpeN": 26,
-      "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v": 10,
-      "5EhvL1FVkQPpMjZX4MAADcW42i3xPSF1KiCpuaxTYVr28sux": 21,
-      "5Dd8gaRNdhm1YP7G1hcB1N842ecAUQmbLjCRLqH5ycaTGrWv": 19,
-      "5DvTpiniW9s3APmHRYn8FroUWyfnLtrsid5Mtn5EwMXHN2ed": 14,
+      "5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3": 26,
+      "5HEo565WAy4Dbq3Sv271SAi7syBSofyfhhwRNjFNSM2gP9M2": 25,
+      "5CaNj3BarTHotEK1n513aoTtFeXcjf6uvKzAyzNuv9cirUoW": 26,
+      "5HK5tp6t2S59DywmHRWPBVJeJ86T61KjurYqeooqj8sREpeN": 27,
+      "5FFApaS75bv5pJHfAp2FVLBj9ZaXuFDjEypsaBNc1wCfe52v": 11,
+      "5EhvL1FVkQPpMjZX4MAADcW42i3xPSF1KiCpuaxTYVr28sux": 22,
+      "5Dd8gaRNdhm1YP7G1hcB1N842ecAUQmbLjCRLqH5ycaTGrWv": 20,
+      "5DvTpiniW9s3APmHRYn8FroUWyfnLtrsid5Mtn5EwMXHN2ed": 15,
       "5HbLYXUBy1snPR8nfioQ7GoA9x76EELzEq9j7F32vWUQHm1x": 1,
-      "5Hp18g9P8hLGKp9W3ZDr4bvJwba6b6bY3P2u3VdYf8yMR8FM": 22,
-      "5CXRfP2ekFhe62r7q3vppRajJmGhTi7vwvb2yr79jveZ282w": 24,
+      "5Hp18g9P8hLGKp9W3ZDr4bvJwba6b6bY3P2u3VdYf8yMR8FM": 23,
+      "5CXRfP2ekFhe62r7q3vppRajJmGhTi7vwvb2yr79jveZ282w": 25,
       "5HNQURvmjjYhTSksi8Wfsw676b4owGwfLR2BFAQzG7H3HhYf": "50text",
-      "5CXC2quDN5nUTqHMkpP5YRp2atYYicvtUghAYLj15gaUFwe5": 20,
+      "5CXC2quDN5nUTqHMkpP5YRp2atYYicvtUghAYLj15gaUFwe5": 21,
       "TEST": 1000
     },
     "pile_server": {
