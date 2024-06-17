@@ -59,24 +59,17 @@ def call_distance_api(sentences, url=None):
 def call_distance_api_multi_process(texts, sentences):
     print(f'start call_distance_api_multi_process len(texts) = {len(texts)}, len(sentences) = {len(sentences)}')
     time_start = time.time_ns()
-    urls = [""]  # first for calling model
-    urls.extend(APP_CONFIG.get_all_nns_server_url())
+    urls = APP_CONFIG.get_all_nns_server_url()
     import concurrent.futures
     max_workers = 10
     with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
         futures = [executor.submit(call_distance_api_and_model_api, texts, sentences, url) for url in urls]
         scores = [future.result() for future in futures]
         # print(f'****** scores = {scores}')
-    print(f'scores len: {len(scores)}')
-    print(f'model result len: {len(scores[0])}')
-    print(f'distance result len: {len(scores[1])}')
 
-    model_result = scores[0]
-    distance_scores = scores[1:]
-    distance_result = [min(values) for values in zip(*distance_scores)]
     time_end = time.time_ns()
-    print(f'time processing distance of {len(texts)} sentences: {(time_end - time_start) // 1000_000} ms')
-    return distance_result, model_result
+    print(f'time processing distance of {len(sentences)} sentences: {(time_end - time_start) // 1000_000} ms')
+    return scores
 
 
 def predict_texts(texts, validator_hotkey=None):
@@ -93,6 +86,55 @@ def call_distance_api_and_model_api(texts, sentences, url):
         return call_distance_api(sentences, url)
     else:
         return infer_model(texts)
+
+
+def get_distance_result(index_for_text, result, length_sentences):
+    distance_result = []
+
+    human_threshold = APP_CONFIG.get_nns_hu_threshold()
+    ai_threshold = APP_CONFIG.get_nns_ai_threshold()
+    for i, text in enumerate(texts):
+        list_index = index_for_text[i]
+        list_result = [result[j] for j in list_index]
+        count_hu = 0
+        for score in list_result:
+            if score < human_threshold:
+                count_hu = count_hu + 1
+        if count_hu == len(list_result):
+            distance_result.append(False)
+            continue
+
+        if length_sentences[i] > 1:
+            count_ai = 0
+            for score in list_result:
+                if score > ai_threshold:
+                    count_ai = count_ai + 1
+            if count_ai > 1:
+                distance_result.append(True)
+                continue
+
+        if length_sentences[i] == 2:
+            if list_result[0] > ai_threshold and list_result[1] < human_threshold:
+                distance_result.append(False)
+                continue
+            elif list_result[0] > ai_threshold and list_result[1] > ai_threshold:
+                distance_result.append(True)
+                continue
+
+        distance_result.append(None)
+
+    print(f'distance result: {distance_result}')
+
+    num_true = distance_result.count(True)
+    num_false = distance_result.count(False)
+    count_not_none = [x is not None for x in distance_result]
+    print(f'print_accuracy_distance_finney num True {num_true}')
+    print(f'print_accuracy_distance_finney num False {num_false}')
+    print(f'count_not_none count_not_none is {count_not_none.count(True)}')
+    if num_true < 151:
+        return True
+    else:
+        return False
 
 
 def infer_with_distance(texts, validator_hotkey=None):
@@ -130,7 +172,6 @@ def get_url_by_validator_hotkey(validator_hotkey):
 def infer_distance(texts, validator_hotkey=None):
     try:
         print(f'start call infer_distance of {len(texts)}, validator hotkey = {validator_hotkey}')
-        time_start = time.time_ns()
 
         new_texts = []
         index_for_text = {}
@@ -148,57 +189,18 @@ def infer_distance(texts, validator_hotkey=None):
             new_texts.extend(sentences)
 
         print(f'length_sentences = {length_sentences}')
-        url = get_url_by_validator_hotkey(validator_hotkey)
-        if url is None:
-            return [None] * len(texts)
 
-        result = call_distance_api(new_texts, url)
-        # result, model_result = call_distance_api_multi_process(texts, new_texts)
-        print(f'distance score: {result}')
-        if result.count(-1) == len(new_texts):
-            return [None] * len(texts)
+        # result = call_distance_api(new_texts, url)
+        scores = call_distance_api_multi_process(texts, new_texts)
+        print(f'distance score len: {len(scores)}')
+        hit_pile = []
+        for i in range(len(scores)):
+            result = scores[i]
+            hit = get_distance_result(index_for_text, result, length_sentences)
+            if hit:
+                hit_pile.append(i)
 
-        distance_result = []
-
-        human_threshold = APP_CONFIG.get_nns_hu_threshold()
-        ai_threshold = APP_CONFIG.get_nns_ai_threshold()
-        for i, text in enumerate(texts):
-            list_index = index_for_text[i]
-            list_result = [result[j] for j in list_index]
-            count_hu = 0
-            for score in list_result:
-                if score < human_threshold:
-                    count_hu = count_hu + 1
-            if count_hu == len(list_result):
-                distance_result.append(False)
-                continue
-
-            if length_sentences[i] > 1:
-                count_ai = 0
-                for score in list_result:
-                    if score > ai_threshold:
-                        count_ai = count_ai + 1
-                if count_ai > 1:
-                    distance_result.append(True)
-                    continue
-
-            if length_sentences[i] == 2:
-                if list_result[0] > ai_threshold and list_result[1] < human_threshold:
-                    distance_result.append(False)
-                    continue
-                elif list_result[0] > ai_threshold and list_result[1] > ai_threshold:
-                    distance_result.append(True)
-                    continue
-
-            distance_result.append(None)
-
-        print(f'distance result: {distance_result}')
-        print_accuracy_distance_finney(distance_result)
-
-        time_end = time.time_ns()
-        print(f'time process infer_distance of {len(texts)} sentences: {(time_end - time_start) // 1000_000} ms')
-
-        return distance_result
+        print(f'Hit file {hit_pile}')
 
     except Exception as e:
         print(f"Error full: {e}")
@@ -224,7 +226,6 @@ def print_accuracy(response, prefix):
     print(f'{prefix} accuracy is {accuracy}')
 
 
-
 def print_accuracy_distance_finney(response):
     num_true = response.count(True)
     num_false = response.count(False)
@@ -232,6 +233,7 @@ def print_accuracy_distance_finney(response):
     print(f'print_accuracy_distance_finney num True {num_true}')
     print(f'print_accuracy_distance_finney num False {num_false}')
     print(f'count_not_none count_not_none is {count_not_none.count(True)}')
+
 
 def print_accuracy_distance_test(response):
     first_half = response[:150]
