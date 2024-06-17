@@ -3,7 +3,7 @@ import time
 
 import requests
 from nltk.tokenize import sent_tokenize
-
+import json
 from app_config import AppConfig
 
 APP_CONFIG = AppConfig()

@@ -1,6 +1,6 @@
 import time
 from argparse import ArgumentParser
-
+import json
 from flask import Flask, request, jsonify
 
 from validation import predict_texts
