@@ -31,6 +31,7 @@ def predict():
         validator_hotkey = data['validator_hotkey']
         print(f'start predicting {len(input_data)} texts, validator_hotkey = {validator_hotkey}')
         distance_response = predict_texts(input_data, validator_hotkey)
+        print(f'distance response: {distance_response}')
         print(f"time loading {int(time.time_ns() - start_time):,} nanosecond")
         return jsonify({"message": "predict successfully", "result": distance_response}), 200
     else:
