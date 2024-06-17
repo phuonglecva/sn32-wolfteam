@@ -131,7 +131,7 @@ def get_distance_result(index_for_text, result, length_sentences,texts):
     print(f'print_accuracy_distance_finney num True {num_true}')
     print(f'print_accuracy_distance_finney num False {num_false}')
     print(f'count_not_none count_not_none is {count_not_none.count(True)}')
-    if num_true < 175:
+    if num_true < 151:
         return True
     else:
         return False
