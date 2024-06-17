@@ -56,22 +56,27 @@ def call_distance_api(sentences, url=None):
         return [-1] * len(sentences)
 
 
-def call_distance_api_multi_process(texts):
-    print(f'start call_distance_api_multi_process len(texts) = {len(texts)}')
+def call_distance_api_multi_process(texts, sentences):
+    print(f'start call_distance_api_multi_process len(texts) = {len(texts)}, len(sentences) = {len(sentences)}')
     time_start = time.time_ns()
-    urls = APP_CONFIG.get_all_nns_server_url()
+    urls = [""]  # first for calling model
+    urls.extend(APP_CONFIG.get_all_nns_server_url())
     import concurrent.futures
     max_workers = 10
     with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
-        futures = [executor.submit(call_distance_api, texts, url) for url in urls]
+        futures = [executor.submit(call_distance_api_and_model_api, texts, sentences, url) for url in urls]
         scores = [future.result() for future in futures]
         # print(f'****** scores = {scores}')
     print(f'scores len: {len(scores)}')
-    print(f'scores[0] len: {len(scores[0])}')
-    result = [min(values) for values in zip(*scores)]
+    print(f'model result len: {len(scores[0])}')
+    print(f'distance result len: {len(scores[1])}')
+
+    model_result = scores[0]
+    distance_scores = scores[1:]
+    distance_result = [min(values) for values in zip(*distance_scores)]
     time_end = time.time_ns()
     print(f'time processing distance of {len(texts)} sentences: {(time_end - time_start) // 1000_000} ms')
-    return result
+    return distance_result, model_result
 
 
 def predict_texts(texts, validator_hotkey=None):
@@ -83,9 +88,16 @@ def predict_texts(texts, validator_hotkey=None):
         return infer_model(texts)
 
 
+def call_distance_api_and_model_api(texts, sentences, url):
+    if url is not None and len(url) > 1:
+        return call_distance_api(sentences, url)
+    else:
+        return infer_model(texts)
+
+
 def infer_with_distance(texts, validator_hotkey=None):
-    distances = infer_distance(texts, validator_hotkey)
-    preds = infer_model(texts)
+    distances, preds = infer_distance(texts, validator_hotkey)
+    # preds = infer_model(texts)
     result = {i: None for i in range(len(texts))}
     preds_confs = {}
     for i in range(len(texts)):
@@ -141,7 +153,7 @@ def infer_distance(texts, validator_hotkey=None):
         #     return [None] * len(texts)
 
         # result = call_distance_api(new_texts, url)
-        result = call_distance_api_multi_process(new_texts)
+        result, model_result = call_distance_api_multi_process(texts, new_texts)
         print(f'distance score: {result}')
 
         distance_result = []
@@ -184,11 +196,11 @@ def infer_distance(texts, validator_hotkey=None):
         time_end = time.time_ns()
         print(f'time process infer_distance of {len(texts)} sentences: {(time_end - time_start) // 1000_000} ms')
 
-        return distance_result
+        return distance_result, model_result
 
     except Exception as e:
         print(f"Error full: {e}")
-        return [None] * len(texts)
+        return [None] * len(texts), model_result
 
 
 # def infer_with_distance_backup(texts):
