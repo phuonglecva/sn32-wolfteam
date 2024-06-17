@@ -1,3 +1,4 @@
+import random
 import shutil
 
 from validation import infer_distance
@@ -12,7 +13,11 @@ def search_validator():
                    os.path.isdir(os.path.join(input_dir, d))]
     for directory in directories:
         files = os.listdir(directory)
+        random.shuffle(files)
+        count = 0
         for file in files:
+            if count == 5:
+                break
             file_path = os.path.join(directory, file)
             print(f'file_path = {file_path}')
             with open(file_path, 'r') as f:
@@ -21,6 +26,7 @@ def search_validator():
                 if len(texts) == 300:
                     validator_hotkey = data['validator_hotkey']
                     infer_distance(texts, validator_hotkey)
+                    count += 1
 
 
 def move_file():
