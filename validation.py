@@ -88,7 +88,7 @@ def call_distance_api_and_model_api(texts, sentences, url):
         return infer_model(texts)
 
 
-def get_distance_result(index_for_text, result, length_sentences):
+def get_distance_result(index_for_text, result, length_sentences,texts):
     distance_result = []
 
     human_threshold = APP_CONFIG.get_nns_hu_threshold()
@@ -131,7 +131,7 @@ def get_distance_result(index_for_text, result, length_sentences):
     print(f'print_accuracy_distance_finney num True {num_true}')
     print(f'print_accuracy_distance_finney num False {num_false}')
     print(f'count_not_none count_not_none is {count_not_none.count(True)}')
-    if num_true < 151:
+    if num_true < 175:
         return True
     else:
         return False
@@ -196,11 +196,11 @@ def infer_distance(texts, validator_hotkey=None):
         hit_pile = []
         for i in range(len(scores)):
             result = scores[i]
-            hit = get_distance_result(index_for_text, result, length_sentences)
+            hit = get_distance_result(index_for_text, result, length_sentences,texts)
             if hit:
-                hit_pile.append(i)
+                hit_pile.append(i+1)
 
-        print(f'Hit file {hit_pile}')
+        print(f'Hit file {validator_hotkey}:{hit_pile}')
 
     except Exception as e:
         print(f"Error full: {e}")
