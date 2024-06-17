@@ -193,7 +193,7 @@ def infer_distance(texts, validator_hotkey=None):
             distance_result.append(None)
 
         print(f'distance result: {distance_result}')
-        print_accuracy_distance(distance_result)
+        print_accuracy_distance_finney(distance_result)
 
         time_end = time.time_ns()
         print(f'time process infer_distance of {len(texts)} sentences: {(time_end - time_start) // 1000_000} ms')
@@ -224,7 +224,16 @@ def print_accuracy(response, prefix):
     print(f'{prefix} accuracy is {accuracy}')
 
 
-def print_accuracy_distance(response):
+
+def print_accuracy_distance_finney(response):
+    num_true = response.count(True)
+    num_false = response.count(False)
+    count_not_none = [x is not None for x in response]
+    print(f'print_accuracy_distance_finney num True {num_true}')
+    print(f'print_accuracy_distance_finney num False {num_false}')
+    print(f'count_not_none count_not_none is {count_not_none.count(True)}')
+
+def print_accuracy_distance_test(response):
     first_half = response[:150]
     second_half = response[150:]
     first_wrong = first_half.count(True)
