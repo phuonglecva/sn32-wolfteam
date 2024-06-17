@@ -96,8 +96,8 @@ def call_distance_api_and_model_api(texts, sentences, url):
 
 
 def infer_with_distance(texts, validator_hotkey=None):
-    distances, preds = infer_distance(texts, validator_hotkey)
-    # preds = infer_model(texts)
+    distances = infer_distance(texts, validator_hotkey)
+    preds = infer_model(texts)
     result = {i: None for i in range(len(texts))}
     preds_confs = {}
     for i in range(len(texts)):
@@ -148,13 +148,15 @@ def infer_distance(texts, validator_hotkey=None):
             new_texts.extend(sentences)
 
         print(f'length_sentences = {length_sentences}')
-        # url = get_url_by_validator_hotkey(validator_hotkey)
-        # if url is None:
-        #     return [None] * len(texts)
+        url = get_url_by_validator_hotkey(validator_hotkey)
+        if url is None:
+            return [None] * len(texts)
 
-        # result = call_distance_api(new_texts, url)
-        result, model_result = call_distance_api_multi_process(texts, new_texts)
+        result = call_distance_api(new_texts, url)
+        # result, model_result = call_distance_api_multi_process(texts, new_texts)
         print(f'distance score: {result}')
+        if result.count(-1) == len(new_texts):
+            return [None] * len(texts)
 
         distance_result = []
 
@@ -196,11 +198,11 @@ def infer_distance(texts, validator_hotkey=None):
         time_end = time.time_ns()
         print(f'time process infer_distance of {len(texts)} sentences: {(time_end - time_start) // 1000_000} ms')
 
-        return distance_result, model_result
+        return distance_result
 
     except Exception as e:
         print(f"Error full: {e}")
-        return [None] * len(texts), model_result
+        return [None] * len(texts)
 
 
 # def infer_with_distance_backup(texts):

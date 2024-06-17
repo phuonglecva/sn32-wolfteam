@@ -87,6 +87,7 @@ class AppConfig(ABC):
     def get_nns_server_url(self, hotkey):
         try:
             pile_file_number = self.value['application']['validator_pile'][hotkey]
+            print(f'pile_file_number :: {pile_file_number}')
             url = self.value['application']['pile_server'][str(pile_file_number)]
             return url
         except Exception as e:
@@ -138,7 +139,7 @@ if __name__ == '__main__':
     print('get_nns_timeout', app_config.get_nns_timeout())
     print('get_nns_ai_threshold', app_config.get_nns_ai_threshold())
     print('get_nns_hu_threshold', app_config.get_nns_hu_threshold())
-    print('get_nns_server_url', app_config.get_nns_server_url("5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3"))
+    print('get_nns_server_url', app_config.get_nns_server_url("5DvTpiniW9s3APmHRYn8FroUWyfnLtrsid5Mtn5EwMXHN2ed"))
     print('get_model_server_url', app_config.get_model_server_url())
     print('get_all_nns_server_url', app_config.get_all_nns_server_url())
     print(f'get_all_nns_server_url length: {len(app_config.get_all_nns_server_url())}')
