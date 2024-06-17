@@ -14,7 +14,7 @@
       "5CXRfP2ekFhe62r7q3vppRajJmGhTi7vwvb2yr79jveZ282w": 24,
       "5HNQURvmjjYhTSksi8Wfsw676b4owGwfLR2BFAQzG7H3HhYf": "50text",
       "5CXC2quDN5nUTqHMkpP5YRp2atYYicvtUghAYLj15gaUFwe5": 20,
-      "5Fq5v71D4LX8Db1xsmRSy6udQThcZ8sFDqxQFwnUZ1BuqY5A": "",
+      "5Fq5v71D4LX8Db1xsmRSy6udQThcZ8sFDqxQFwnUZ1BuqY5A": 6,
       "TEST": 1000
     },
     "pile_server": {
@@ -59,7 +59,7 @@
     },
     "nns": {
       "time_out": 12,
-      "ai_threshold": 0.2,
+      "ai_threshold": 0.4,
       "human_threshold": 0.1
     }
   }
