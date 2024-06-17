@@ -7,7 +7,7 @@ import os
 
 
 def search_validator():
-    input_dir = '/root/sample_data/'
+    input_dir = '/root/sample_data/5Fq5v71D4LX8Db1xsmRSy6udQThcZ8sFDqxQFwnUZ1BuqY5A/backup'
     # files = os.listdir(input_dir)
     directories = [os.path.join(input_dir, d) for d in os.listdir(input_dir) if
                    os.path.isdir(os.path.join(input_dir, d))]
@@ -30,7 +30,7 @@ def search_validator():
 
 
 def move_file():
-    directory = '/root/sample_data/5Fq5v71D4LX8Db1xsmRSy6udQThcZ8sFDqxQFwnUZ1BuqY5A/backup'
+    directory = '/root/sample_data/'
     files = [file for file in os.listdir(directory) if not os.path.isdir(os.path.join(directory, file))]
     for file in files:
         file_path = os.path.join(directory, file)
