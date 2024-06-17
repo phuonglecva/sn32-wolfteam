@@ -39,7 +39,7 @@ def infer_model(texts):
 
 def call_distance_api(sentences, url=None):
     time_start = time.time_ns()
-    print(f'call distance api: {url}')
+    print(f'call distance api: {url}, len(sentences) = {len(sentences)}')
     try:
         headers = {
             'Content-Type': 'application/json'
