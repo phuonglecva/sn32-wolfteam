@@ -30,6 +30,10 @@ def move_file():
         file_path = os.path.join(directory, file)
         dir_name = file.split('_')[0]
         target_dir = os.path.join(directory, dir_name)
+        destination_file = os.path.join(target_dir, file)
+        if os.path.exists(destination_file):
+            os.remove(destination_file)
+
         shutil.move(file_path, target_dir)
 
 
