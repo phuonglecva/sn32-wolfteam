@@ -191,6 +191,7 @@ def infer_distance(texts, validator_hotkey=None):
         print(f'length_sentences = {length_sentences}')
 
         # result = call_distance_api(new_texts, url)
+        urls = APP_CONFIG.get_all_nns_server_url()
         scores = call_distance_api_multi_process(texts, new_texts)
         print(f'distance score len: {len(scores)}')
         hit_pile = []
@@ -198,7 +199,7 @@ def infer_distance(texts, validator_hotkey=None):
             result = scores[i]
             hit, num_true = get_distance_result(index_for_text, result, length_sentences, texts)
             if hit:
-                hit_pile.append(f'{i + 1}_{num_true}')
+                hit_pile.append(f'{i + 1}_{num_true}_{urls[i]}')
 
         print(f'Hit file {validator_hotkey}:{hit_pile}')
 
