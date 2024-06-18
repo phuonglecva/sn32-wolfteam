@@ -16,7 +16,7 @@ def search_validator():
         random.shuffle(files)
         count = 0
         for file in files:
-            if count == 5:
+            if count == 100:
                 break
             file_path = os.path.join(directory, file)
             print(f'file_path = {file_path}')
