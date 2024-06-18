@@ -59,8 +59,8 @@ def call_distance_api(sentences, url=None):
 def call_distance_api_multi_process(texts, sentences):
     print(f'start call_distance_api_multi_process len(texts) = {len(texts)}, len(sentences) = {len(sentences)}')
     time_start = time.time_ns()
-    # urls = APP_CONFIG.get_all_nns_server_url()
-    urls = ['http://69.114.81.164:40177/predict', 'http://213.181.110.225:42951/predict']
+    urls = APP_CONFIG.get_all_nns_server_url()
+    # urls = ['http://69.114.81.164:40177/predict', 'http://213.181.110.225:42951/predict']
     import concurrent.futures
     max_workers = 10
     with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
@@ -132,7 +132,7 @@ def get_distance_result(index_for_text, result, length_sentences, texts):
     print(f'print_accuracy_distance_finney num True {num_true}')
     print(f'print_accuracy_distance_finney num False {num_false}')
     print(f'count_not_none count_not_none is {count_not_none.count(True)}')
-    if 10 < num_true < 200:
+    if 10 < num_true < 175:
         return True, num_true
     else:
         return False, -1
