@@ -12,7 +12,7 @@
       "5HbLYXUBy1snPR8nfioQ7GoA9x76EELzEq9j7F32vWUQHm1x": 1,
       "5Hp18g9P8hLGKp9W3ZDr4bvJwba6b6bY3P2u3VdYf8yMR8FM": 23,
       "5CXRfP2ekFhe62r7q3vppRajJmGhTi7vwvb2yr79jveZ282w": 25,
-      "5HNQURvmjjYhTSksi8Wfsw676b4owGwfLR2BFAQzG7H3HhYf": "50text",
+      "5HNQURvmjjYhTSksi8Wfsw676b4owGwfLR2BFAQzG7H3HhYf": 6,
       "5CXC2quDN5nUTqHMkpP5YRp2atYYicvtUghAYLj15gaUFwe5": 21,
       "TEST": 1000
     },
@@ -58,7 +58,7 @@
     },
     "nns": {
       "time_out": 12,
-      "ai_threshold": 0.4,
+      "ai_threshold": 0.36,
       "human_threshold": 0.1
     }
   }
