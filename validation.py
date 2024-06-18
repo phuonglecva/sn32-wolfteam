@@ -112,6 +112,9 @@ def infer_with_distance(texts, validator_hotkey=None):
     if ai_count > 150 or human_count > 150:
         return preds
 
+    if ai_count == 0 and human_count == 0:
+        return preds
+
     sorted_preds_confs = sorted(preds_confs, key=preds_confs.get)
     print(f'sorted_preds_confs len = {len(sorted_preds_confs)}, sorted_preds_confs: {sorted_preds_confs}')
 
