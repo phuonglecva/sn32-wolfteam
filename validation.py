@@ -274,7 +274,7 @@ if __name__ == '__main__':
         # print(f'model only response: {model_only_response}')
         print_accuracy(model_only_response, 'model_only_response')
 
-        distance_response = infer_with_distance(texts, "TEST")
+        distance_response = infer_with_distance(texts, "5CXRfP2ekFhe62r7q3vppRajJmGhTi7vwvb2yr79jveZ282w")
         print(f'distance response: {distance_response}')
         # print(f'distance response count None: {distance_response.count(None)}')
         # print(f'distance response first half count None: {distance_response[:150].count(None)}')
