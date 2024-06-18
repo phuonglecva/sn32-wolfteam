@@ -7,7 +7,7 @@ import os
 
 
 def search_validator():
-    input_dir = '/root/sample_data/5Fq5v71D4LX8Db1xsmRSy6udQThcZ8sFDqxQFwnUZ1BuqY5A'
+    input_dir = '/root/sample_data/5F4tQyWrhfGVcNhoqeiNsR6KjD4wMZ2kfhLj4oHYuyHbZAc3'
     # files = os.listdir(input_dir)
     directories = [os.path.join(input_dir, d) for d in os.listdir(input_dir) if
                    os.path.isdir(os.path.join(input_dir, d))]
