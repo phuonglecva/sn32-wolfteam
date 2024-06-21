@@ -5,6 +5,7 @@ import requests
 from nltk.tokenize import sent_tokenize
 import json
 from app_config import AppConfig
+from redis_utils import get_pred_result, set_pred_result
 
 APP_CONFIG = AppConfig()
 
@@ -83,9 +84,11 @@ def predict_texts(texts, validator_hotkey=None):
     APP_CONFIG.load_app_config()
     len_texts = len(texts)
     if len_texts == 300:
-        return infer_with_distance(texts, validator_hotkey)
+        return infer_with_distance_for_300_requests(texts, validator_hotkey)
+    elif len_texts <= 10:
+        return infer_with_distance_for_checked_requests(texts, validator_hotkey)
     else:
-        return infer_model(texts)
+        return infer_with_distance_for_50_requests(texts)
 
 
 def call_distance_api_and_model_api(texts, sentences, url):
@@ -95,25 +98,61 @@ def call_distance_api_and_model_api(texts, sentences, url):
         return infer_model(texts)
 
 
-def infer_with_distance(texts, validator_hotkey=None):
+def infer_with_distance_for_50_requests(texts):
+    cache = get_pred_result(texts)
+    count_none = cache.count(None)
+    print(f'count_none 50 requests in cache: {count_none}')
+    if count_none == 0:
+        return cache
+
+    model_preds = infer_model(texts)
+    set_pred_result(texts=texts, preds=model_preds)
+    return model_preds
+
+
+def infer_with_distance_for_checked_requests(texts, validator_hotkey=None):
+    cache = get_pred_result(texts)
+    count_none = cache.count(None)
+    print(f'count_none checked requests in cache: {count_none}')
+    if count_none == 0:
+        return cache
+
     distances = infer_distance(texts, validator_hotkey)
-    preds = infer_model(texts)
+    model_preds = infer_model(texts)
+    result = [None] * len(texts)
+    for i in range(len(texts)):
+        if distances[i] is not None:
+            result[i] = distances[i]
+        else:
+            result[i] = model_preds[i]
+
+    set_pred_result(texts=texts, preds=result)
+    return result
+
+
+def infer_with_distance_for_300_requests(texts, validator_hotkey=None):
+    cache = get_pred_result(texts)
+    count_none = cache.count(None)
+    print(f'count_none 300 requests in cache: {count_none}')
+    if count_none == 0:
+        return cache
+
+    distances = infer_distance(texts, validator_hotkey)
+    model_preds = infer_model(texts)
     result = {i: None for i in range(len(texts))}
     preds_confs = {}
     for i in range(len(texts)):
         if distances[i] is not None:
             result[i] = distances[i]
         else:
-            preds_confs[i] = preds[i]
+            preds_confs[i] = model_preds[i]
 
     ai_count = len(list(filter(lambda x: x is True, result.values())))
     human_count = len(list(filter(lambda x: x is False, result.values())))
     print(f'human_count = {human_count}, ai_count = {ai_count}')
-    if ai_count > 150 or human_count > 150:
-        return preds
-
-    if ai_count == 0 and human_count == 0:
-        return preds
+    if ai_count > 150 or human_count > 150 or (ai_count == 0 and human_count == 0):
+        set_pred_result(texts=texts, preds=model_preds)
+        return model_preds
 
     sorted_preds_confs = sorted(preds_confs, key=preds_confs.get)
     print(f'sorted_preds_confs len = {len(sorted_preds_confs)}, sorted_preds_confs: {sorted_preds_confs}')
@@ -123,7 +162,10 @@ def infer_with_distance(texts, validator_hotkey=None):
 
     for i in range(150 - human_count, len(sorted_preds_confs)):
         result[sorted_preds_confs[i]] = True
-    return list(result.values())
+
+    final_result = list(result.values())
+    set_pred_result(texts=texts, preds=final_result)
+    return final_result
 
 
 def get_url_by_validator_hotkey(validator_hotkey):
@@ -227,7 +269,6 @@ def print_accuracy(response, prefix):
     print(f'{prefix} accuracy is {accuracy}')
 
 
-
 def print_accuracy_distance_finney(response):
     num_true = response.count(True)
     num_false = response.count(False)
@@ -235,6 +276,7 @@ def print_accuracy_distance_finney(response):
     print(f'print_accuracy_distance_finney num True {num_true}')
     print(f'print_accuracy_distance_finney num False {num_false}')
     print(f'count_not_none count_not_none is {count_not_none.count(True)}')
+
 
 def print_accuracy_distance_test(response):
     first_half = response[:150]
@@ -277,7 +319,7 @@ if __name__ == '__main__':
         # print(f'model only response: {model_only_response}')
         print_accuracy(model_only_response, 'model_only_response')
 
-        distance_response = infer_with_distance(texts, "5CXRfP2ekFhe62r7q3vppRajJmGhTi7vwvb2yr79jveZ282w")
+        distance_response = infer_with_cache_distance(texts, "5CXRfP2ekFhe62r7q3vppRajJmGhTi7vwvb2yr79jveZ282w")
         print(f'distance response: {distance_response}')
         # print(f'distance response count None: {distance_response.count(None)}')
         # print(f'distance response first half count None: {distance_response[:150].count(None)}')
