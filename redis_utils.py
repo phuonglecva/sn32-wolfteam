@@ -1,7 +1,6 @@
 import hashlib
 import traceback
 import redis
-import bittensor as bt
 
 redis_pool = redis.ConnectionPool(host='127.0.0.1', port=6379, decode_responses=True)
 
@@ -17,7 +16,7 @@ def exists(key, db=0):
         conn.select(db)
         return conn.exists(key) == 1
     except Exception as e:
-        bt.logging.error(e)
+        print(e)
         traceback.print_exc()
 
 
@@ -27,7 +26,7 @@ def get(key, db=0):
         conn.select(db)
         return conn.get(key)
     except Exception as e:
-        bt.logging.error(e)
+        print(e)
         traceback.print_exc()
 
 
@@ -37,7 +36,7 @@ def set(key, value, db=0):
         conn.select(db)
         conn.setex(key, 3600, value)
     except Exception as e:
-        bt.logging.error(e)
+        print(e)
         traceback.print_exc()
 
 
@@ -59,7 +58,7 @@ def set_pred_result(texts, preds, db=0):
             value = str(preds[i])
             conn.setex(key, 3600, value)
     except Exception as e:
-        bt.logging.error(e)
+        print(e)
         traceback.print_exc()
 
 
@@ -76,8 +75,8 @@ def get_pred_result(texts, db=0):
                 result[i] = (value == 'true')
         return result
     except Exception as e:
-        bt.logging.error(e)
-        bt.logging.error(f'get_pred_result length of texts: {len(texts)}')
+        print(e)
+        print(f'get_pred_result length of texts: {len(texts)}')
         traceback.print_exc()
         return [None] * len(texts)
 
