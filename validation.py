@@ -106,6 +106,12 @@ def infer_with_distance_for_50_requests(texts):
         return cache
 
     model_preds = infer_model(texts)
+
+    # Result need to sync with cache
+    for i in range(len(texts)):
+        if cache[i] is not None:
+            model_preds[i] = cache[i]
+
     set_pred_result(texts=texts, preds=model_preds)
     return model_preds
 
@@ -162,6 +168,11 @@ def infer_with_distance_for_300_requests(texts, validator_hotkey=None):
 
     for i in range(150 - human_count, len(sorted_preds_confs)):
         result[sorted_preds_confs[i]] = True
+
+    # Result need to sync with cache
+    for i in range(len(texts)):
+        if cache[i] is not None:
+            result[i] = cache[i]
 
     final_result = list(result.values())
     set_pred_result(texts=texts, preds=final_result)
