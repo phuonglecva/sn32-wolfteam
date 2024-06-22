@@ -47,6 +47,7 @@ def gen_hash(token):
 
 
 def set_pred_result(texts, preds, db=0):
+    print(f'start set redis len(texts) = {len(texts)}, db = {db}')
     try:
         if len(texts) != len(preds):
             return None
@@ -63,6 +64,7 @@ def set_pred_result(texts, preds, db=0):
 
 
 def get_pred_result(texts, db=0):
+    print(f'start get redis len(texts) = {len(texts)}, db = {db}')
     try:
         result = [None] * len(texts)
         conn = get_conn()

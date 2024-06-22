@@ -312,7 +312,7 @@ if __name__ == '__main__':
     from reward import get_rewards
 
     labels = [False] * 150 + [True] * 150
-    input_dir = '/root/combine-method/sample_data'
+    input_dir = '/root/sample_sent_data_pil01'
     files = os.listdir(input_dir)
     sum_reward = [0, 0]
     sum_correct_pred = [0, 0]
@@ -323,14 +323,17 @@ if __name__ == '__main__':
         print(f'file_path = {file_path}')
         with open(file_path, 'r') as f:
             data = json.load(f)
-            texts = data['texts']
+            texts = data['auged_texts']
+            checked_texts = data['checked_texts']
             # print(f'texts = {texts}')
 
+        checked_model_response = infer_model(checked_texts)
         model_only_response = infer_model(texts)
         # print(f'model only response: {model_only_response}')
         print_accuracy(model_only_response, 'model_only_response')
 
-        distance_response = infer_with_cache_distance(texts, "5CXRfP2ekFhe62r7q3vppRajJmGhTi7vwvb2yr79jveZ282w")
+        checked_distance_response = infer_with_distance_for_checked_requests(checked_texts)
+        distance_response = infer_with_distance_for_300_requests(texts, "TEST")
         print(f'distance response: {distance_response}')
         # print(f'distance response count None: {distance_response.count(None)}')
         # print(f'distance response first half count None: {distance_response[:150].count(None)}')
@@ -338,7 +341,10 @@ if __name__ == '__main__':
 
         print_accuracy(distance_response, 'distance_response')
 
-        rewards, metrics = get_rewards(labels, [model_only_response, distance_response])
+        rewards, metrics = get_rewards(labels=labels,
+                                       predictions_list=[model_only_response, distance_response],
+                                       check_predictions_list=[checked_model_response, checked_distance_response],
+                                       version_predictions_list=[[], []])
         print(rewards, metrics)
 
         sum_reward[0] += rewards[0]
