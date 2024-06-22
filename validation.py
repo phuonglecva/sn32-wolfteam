@@ -359,8 +359,6 @@ if __name__ == '__main__':
         sum_checked_requests += len(checked_texts)
         print(
             f'++++++++++ Accuracy of infer_with_distance_for_checked_requests: {sum_checked_correct / sum_checked_requests}')
-        if time.time_ns() > 0:
-            continue
         distance_response = infer_with_distance_for_300_requests(texts, "TEST")
         print(f'distance response: {distance_response}')
         # print(f'distance response count None: {distance_response.count(None)}')
