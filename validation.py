@@ -249,7 +249,7 @@ def infer_distance(texts, validator_hotkey=None):
             distance_result.append(None)
 
         print(f'distance result: {distance_result}')
-        print_accuracy_distance_finney(distance_result)
+        print_accuracy_distance_test(distance_result)
 
         time_end = time.time_ns()
         print(f'time process infer_distance of {len(texts)} sentences: {(time_end - time_start) // 1000_000} ms')
