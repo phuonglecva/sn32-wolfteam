@@ -325,6 +325,12 @@ if __name__ == '__main__':
             data = json.load(f)
             texts = data['auged_texts']
             checked_texts = data['checked_texts']
+            check_ids = []
+            for ctext in checked_texts:
+                for i in range(len(texts)):
+                    if ctext == texts[i]:
+                        check_ids.append(i)
+
             # print(f'texts = {texts}')
 
         checked_model_response = infer_model(checked_texts)
@@ -344,7 +350,8 @@ if __name__ == '__main__':
         rewards, metrics = get_rewards(labels=labels,
                                        predictions_list=[model_only_response, distance_response],
                                        check_predictions_list=[checked_model_response, checked_distance_response],
-                                       version_predictions_list=[[], []])
+                                       version_predictions_list=[[], []],
+                                       check_ids=check_ids)
         print(rewards, metrics)
 
         sum_reward[0] += rewards[0]
