@@ -352,8 +352,10 @@ if __name__ == '__main__':
         # print_accuracy(model_only_response, 'model_only_response')
 
         checked_distance_response = infer_with_distance_for_checked_requests(checked_texts, validator_hotkey="TEST")
-        print(f'checked_distance_response = {checked_distance_response}')
-        sum_checked_correct += cal_check_correct(checked_distance_response, check_ids)
+        print(f'checked_distance_response = {checked_distance_response},  check_ids = {check_ids}')
+        checked_correct = cal_check_correct(checked_distance_response, check_ids)
+        print(f'checked_correct count = {checked_correct}')
+        sum_checked_correct += checked_correct
         sum_checked_requests += len(checked_texts)
         print(
             f'++++++++++ Accuracy of infer_with_distance_for_checked_requests: {sum_checked_correct / sum_checked_requests}')
