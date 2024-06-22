@@ -74,7 +74,7 @@ def get_pred_result(texts, db=0):
             key = hashes[i]
             value = conn.get(key)
             if value is not None:
-                result[i] = (value == 'true')
+                result[i] = (value == 'True')
         return result
     except Exception as e:
         print(e)

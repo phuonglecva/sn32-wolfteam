@@ -35,6 +35,9 @@ def count_penalty(
 ) -> float:
     bad = np.any((y_pred < 0) | (y_pred > 1))
 
+    print(f'check_predictions check_predictions = {check_predictions}')
+    print(f'y_pred y_pred = {y_pred}')
+    print(f'check_ids check_ids = {check_ids}')
     if (check_predictions.round(2) != y_pred[check_ids].round(2)).any():
         bad = 1
 
