@@ -329,7 +329,7 @@ if __name__ == '__main__':
             for ctext in checked_texts:
                 for i in range(len(texts)):
                     if ctext == texts[i]:
-                        check_ids.append(i)
+                        check_ids.append(int(i))
 
             # print(f'texts = {texts}')
 
