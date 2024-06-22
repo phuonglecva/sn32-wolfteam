@@ -59,8 +59,8 @@
     },
     "nns": {
       "time_out": 12,
-      "ai_threshold": 0.5,
-      "human_threshold": 0.1
+      "ai_threshold": 0.6,
+      "human_threshold": 0.09
     }
   }
 }
