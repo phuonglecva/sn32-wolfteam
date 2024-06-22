@@ -132,7 +132,7 @@ def infer_with_distance_for_checked_requests(texts, validator_hotkey=None):
         else:
             result[i] = model_preds[i]
 
-    # set_pred_result(texts=texts, preds=result)
+    set_pred_result(texts=texts, preds=result)
     return result
 
 
@@ -347,9 +347,9 @@ if __name__ == '__main__':
                         check_ids.append(int(i))
 
         print(f'before checkIds = {check_ids}')
-        # checked_model_response = infer_model(checked_texts)
-        # model_only_response = infer_model(texts)
-        # print_accuracy(model_only_response, 'model_only_response')
+        checked_model_response = infer_model(checked_texts)
+        model_only_response = infer_model(texts)
+        print_accuracy(model_only_response, 'model_only_response')
 
         checked_distance_response = infer_with_distance_for_checked_requests(checked_texts, validator_hotkey="TEST")
         print(f'checked_distance_response = {checked_distance_response},  check_ids = {check_ids}')
