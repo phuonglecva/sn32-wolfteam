@@ -316,6 +316,7 @@ def cal_check_correct(response, check_ids):
             count_correct += 1
         if response[i] and check_ids[i] >= 150:
             count_correct += 1
+    return count_correct
 
 
 if __name__ == '__main__':
@@ -356,7 +357,8 @@ if __name__ == '__main__':
         print(f'checked_distance_response = {checked_distance_response}')
         sum_checked_correct += cal_check_correct(checked_distance_response, check_ids)
         sum_checked_requests += len(checked_texts)
-        print(f'++++++++++ Accuracy of infer_with_distance_for_checked_requests: {sum_checked_correct/sum_checked_requests}')
+        print(
+            f'++++++++++ Accuracy of infer_with_distance_for_checked_requests: {sum_checked_correct / sum_checked_requests}')
 
         distance_response = infer_with_distance_for_300_requests(texts, "TEST")
         print(f'distance response: {distance_response}')
