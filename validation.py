@@ -339,7 +339,7 @@ if __name__ == '__main__':
         # print(f'model only response: {model_only_response}')
         print_accuracy(model_only_response, 'model_only_response')
 
-        checked_distance_response = infer_with_distance_for_checked_requests(checked_texts)
+        checked_distance_response = infer_with_distance_for_checked_requests(checked_texts, validator_hotkey="TEST")
         distance_response = infer_with_distance_for_300_requests(texts, "TEST")
         print(f'distance response: {distance_response}')
         # print(f'distance response count None: {distance_response.count(None)}')
