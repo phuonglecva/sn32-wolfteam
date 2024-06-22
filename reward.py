@@ -1,3 +1,4 @@
+import traceback
 from typing import List
 import numpy as np
 from sklearn.metrics import f1_score, confusion_matrix, average_precision_score
@@ -75,5 +76,6 @@ def get_rewards(
         except Exception as e:
             print(f'error {e}')
             metrics.append({'fp_score': 0, 'f1_score': 0, 'ap_score': 0, 'penalty': 1})
+            traceback.print_exc()
 
     return rewards, metrics
