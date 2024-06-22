@@ -332,6 +332,7 @@ if __name__ == '__main__':
                         check_ids.append(int(i))
 
             # print(f'texts = {texts}')
+        check_ids = np.random.choice(np.arange(len(check_ids)).astype(int), size=len(check_ids), replace=False)
 
         checked_model_response = infer_model(checked_texts)
         model_only_response = infer_model(texts)
