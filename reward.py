@@ -38,7 +38,8 @@ def count_penalty(
     print(f'check_predictions check_predictions = {check_predictions}')
     print(f'y_pred y_pred = {y_pred}')
     print(f'check_ids check_ids = {check_ids}')
-    if (check_predictions.round(2) != y_pred[check_ids].round(2)).any():
+
+    if (check_predictions != y_pred[check_ids]).any():
         bad = 1
 
     if version_predictions_array:
