@@ -132,7 +132,7 @@ def infer_with_distance_for_checked_requests(texts, validator_hotkey=None):
         else:
             result[i] = model_preds[i]
 
-    set_pred_result(texts=texts, preds=result)
+    # set_pred_result(texts=texts, preds=result)
     return result
 
 
