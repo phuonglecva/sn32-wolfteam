@@ -333,6 +333,8 @@ if __name__ == '__main__':
 
             # print(f'texts = {texts}')
         print(f'before checkIds = {check_ids}')
+        check_ids[0] = check_ids[0] + 1
+        check_ids[1] = check_ids[1] + 1
 
         checked_model_response = infer_model(checked_texts)
         model_only_response = infer_model(texts)
