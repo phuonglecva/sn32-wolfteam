@@ -306,6 +306,18 @@ def cal_correct_prediction(response):
     return first_half + second_half
 
 
+def cal_check_correct(response, check_ids):
+    if len(response) != len(check_ids):
+        print(f'len response diff len check ids')
+        return 0
+    count_correct = 0
+    for i in range(len(response)):
+        if not response[i] and check_ids[i] < 150:
+            count_correct += 1
+        if response[i] and check_ids[i] >= 150:
+            count_correct += 1
+
+
 if __name__ == '__main__':
     import json
     import os
@@ -316,6 +328,8 @@ if __name__ == '__main__':
     files = os.listdir(input_dir)
     sum_reward = [0, 0]
     sum_correct_pred = [0, 0]
+    sum_checked_correct = 0
+    sum_checked_requests = 0
     count = 0
 
     for file in files:
@@ -331,17 +345,19 @@ if __name__ == '__main__':
                     if ctext == texts[i]:
                         check_ids.append(int(i))
 
-            # print(f'texts = {texts}')
+        # print(f'texts = {texts}')
         print(f'before checkIds = {check_ids}')
-        check_ids[0] = (check_ids[0] + 150) % 300
-        check_ids[1] = (check_ids[1] + 150) % 300
-
         checked_model_response = infer_model(checked_texts)
         model_only_response = infer_model(texts)
         # print(f'model only response: {model_only_response}')
         print_accuracy(model_only_response, 'model_only_response')
 
         checked_distance_response = infer_with_distance_for_checked_requests(checked_texts, validator_hotkey="TEST")
+        print(f'checked_distance_response = {checked_distance_response}')
+        sum_checked_correct += cal_check_correct(checked_distance_response, check_ids)
+        sum_checked_requests += len(checked_texts)
+        print(f'++++++++++ Accuracy of infer_with_distance_for_checked_requests: {sum_checked_correct/sum_checked_requests}')
+
         distance_response = infer_with_distance_for_300_requests(texts, "TEST")
         print(f'distance response: {distance_response}')
         # print(f'distance response count None: {distance_response.count(None)}')
