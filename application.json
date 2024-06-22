@@ -15,7 +15,8 @@
       "5HNQURvmjjYhTSksi8Wfsw676b4owGwfLR2BFAQzG7H3HhYf": 6,
       "5CXC2quDN5nUTqHMkpP5YRp2atYYicvtUghAYLj15gaUFwe5": 21,
       "5Fq5v71D4LX8Db1xsmRSy6udQThcZ8sFDqxQFwnUZ1BuqY5A": 11,
-      "TEST": 1000
+      "TEST01": 1001,
+      "TEST25": 1025
     },
     "pile_server": {
       "1": "http://209.170.80.132:17577/predict",
@@ -51,7 +52,8 @@
       "28": "http://213.181.110.225:42972/predict",
       "29": "http://213.181.110.225:42961/predict",
 
-      "1000": "http://174.92.219.240:52159/predict"
+      "1001": "http://174.92.219.240:52159/predict",
+      "1025": "http://174.92.219.240:52109/predict"
     },
     "model": {
       "url": "http://174.92.219.240:52135/predict",
