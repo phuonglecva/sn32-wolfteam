@@ -1,6 +1,6 @@
 # Description: This file contains the code for the validation of the model
 import time
-
+import numpy as np
 import requests
 from nltk.tokenize import sent_tokenize
 import json
@@ -347,11 +347,11 @@ if __name__ == '__main__':
 
         print_accuracy(distance_response, 'distance_response')
 
-        rewards, metrics = get_rewards(labels=labels,
+        rewards, metrics = get_rewards(labels=np.array(labels),
                                        predictions_list=[model_only_response, distance_response],
                                        check_predictions_list=[checked_model_response, checked_distance_response],
                                        version_predictions_list=[[], []],
-                                       check_ids=check_ids)
+                                       check_ids=np.array(check_ids))
         print(rewards, metrics)
 
         sum_reward[0] += rewards[0]
