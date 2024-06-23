@@ -50,7 +50,7 @@ def infer_deberta(texts):
     print(f'deberta scores: {scores}')
     result = []
     for score in scores:
-        if score < 0.016:
+        if score < 0.0155:
             result.append(False)
         elif score >= 0.985:
             result.append(True)
