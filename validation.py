@@ -47,7 +47,7 @@ def infer_deberta(texts):
     }
     response = requests.request("POST", url, json=payload, timeout=APP_CONFIG.get_deberta_timeout())
     scores = response.json()["result"]
-    # print(f'model scores: {scores}')
+    print(f'deberta scores: {scores}')
     result = []
     for score in scores:
         if score < 0.016:
