@@ -374,14 +374,15 @@ if __name__ == '__main__':
                     if ctext == texts[i]:
                         check_ids.append(int(i))
 
+        deberta_response = infer_deberta(texts)
+        if time.time_ns() > 0:
+            continue
+
         print(f'before checkIds = {check_ids}')
         checked_model_response = infer_model(checked_texts)
         model_only_response = infer_model(texts)
         print_accuracy(model_only_response, 'model_only_response')
 
-        deberta_response = infer_deberta(texts)
-        if time.time_ns() > 0:
-            continue
 
         checked_distance_response = infer_with_distance_for_checked_requests(checked_texts, validator_hotkey="TEST01")
         print(f'checked_distance_response = {checked_distance_response},  check_ids = {check_ids}')
