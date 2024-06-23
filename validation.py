@@ -353,7 +353,7 @@ if __name__ == '__main__':
     from reward import get_rewards
 
     labels = [False] * 150 + [True] * 150
-    input_dir = '/root/sample_sent_data_pil01'
+    input_dir = '/root/sample_sent_data_pile22'
     files = os.listdir(input_dir)
     sum_reward = [0, 0]
     sum_correct_pred = [0, 0]
