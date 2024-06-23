@@ -52,7 +52,7 @@ def infer_deberta(texts):
     for score in scores:
         if score < 0.016:
             result.append(False)
-        elif score >= 0.98:
+        elif score >= 0.985:
             result.append(True)
         else:
             result.append(None)
