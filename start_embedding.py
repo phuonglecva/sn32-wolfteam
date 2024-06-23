@@ -55,5 +55,5 @@ if __name__ == "__main__":
     pool = model.start_multi_process_pool(target_devices=devices)
     part = str(args.part)
     # file_path = f'output/{part}.json'
-    file_path = f'/root/sn32-wolfteam/data_input/01/{part}.json'
+    file_path = f'/root/sn32-wolfteam/data_input/22/{part}.json'
     embeddings(file_path, args.part, model, pool)
