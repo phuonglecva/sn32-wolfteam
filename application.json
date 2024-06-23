@@ -59,6 +59,10 @@
       "url": "http://174.92.219.240:52135/predict",
       "time_out": 12
     },
+    "deberta": {
+      "url": "http://174.92.219.240:52173/predict",
+      "time_out": 15
+    },
     "nns": {
       "time_out": 12,
       "ai_threshold": 0.6,

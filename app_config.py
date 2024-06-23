@@ -118,6 +118,22 @@ class AppConfig(ABC):
             traceback.print_exc()
         return None
 
+    def get_deberta_server_url(self):
+        try:
+            return self.value['application']['deberta']['url']
+        except Exception as e:
+            print(e)
+            traceback.print_exc()
+        return None
+
+    def get_deberta_timeout(self):
+        try:
+            return self.value['application']['deberta']['time_out']
+        except Exception as e:
+            print(e)
+            traceback.print_exc()
+        return 10
+
     def load_app_config(self):
         print("start load_app_config")
         try:

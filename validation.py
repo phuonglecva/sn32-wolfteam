@@ -38,6 +38,34 @@ def infer_model(texts):
     return result
 
 
+def infer_deberta(texts):
+    print(f'start infer_debertal of {len(texts)} texts')
+    time_start = time.time_ns()
+    url = APP_CONFIG.get_deberta_server_url()
+    payload = {
+        "list_text": texts
+    }
+    response = requests.request("POST", url, json=payload, timeout=APP_CONFIG.get_deberta_timeout())
+    scores = response.json()["result"]
+    # print(f'model scores: {scores}')
+    result = []
+    for score in scores:
+        if score < 0.016:
+            result.append(False)
+        elif score >= 0.98:
+            result.append(True)
+        else:
+            result.append(None)
+
+    print(f'deberta results: {result}')
+    print(f'deberta count None: {result.count(None)}')
+    print(f'deberta fist half count True: {result[:150].count(True)}')
+    print(f'deberta second half count False: {result[150:].count(False)}')
+    time_end = time.time_ns()
+    print(f'time infer model: {(time_end - time_start) // 1000_000}')
+    return result
+
+
 def call_distance_api(sentences, url=None):
     time_start = time.time_ns()
     print(f'call distance api: {url}, len(sentences) = {len(sentences)}')
@@ -350,6 +378,10 @@ if __name__ == '__main__':
         checked_model_response = infer_model(checked_texts)
         model_only_response = infer_model(texts)
         print_accuracy(model_only_response, 'model_only_response')
+
+        deberta_response = infer_deberta(texts)
+        if time.time_ns() > 0:
+            continue
 
         checked_distance_response = infer_with_distance_for_checked_requests(checked_texts, validator_hotkey="TEST01")
         print(f'checked_distance_response = {checked_distance_response},  check_ids = {check_ids}')
