@@ -88,8 +88,8 @@ def run_test():
 
         auged_texts = data['auged_texts']
         pred_result = []
-        for i in range(1):
-            texts = auged_texts[300 * i:300*i + 300]
+        for i in range(6):
+            texts = auged_texts[50 * i:50*i + 50]
             print(f"type of texts: {type(texts)}")
             pred = call_api(texts)
             pred_result.extend(pred)
