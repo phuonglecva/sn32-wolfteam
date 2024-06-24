@@ -50,7 +50,7 @@ def detect(text):
 
 def call_api(texts: List[str]):
     import concurrent.futures
-    max_workers = 10
+    max_workers = 50
     with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
         result = list(executor.map(is_ai, texts))
         return result
