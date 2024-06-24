@@ -112,9 +112,9 @@ def predict_texts(texts, validator_hotkey=None):
     APP_CONFIG.load_app_config()
     len_texts = len(texts)
     if len_texts == 300:
-        return infer_with_distance_for_300_requests(texts, validator_hotkey)
+        return infer_model_deberta_for_300_requests(texts)
     elif len_texts <= 10:
-        return infer_with_distance_for_checked_requests(texts, validator_hotkey)
+        return infer_model_deberta_for_checked_requests(texts)
     else:
         return infer_with_distance_for_50_requests(texts)
 
@@ -144,19 +144,19 @@ def infer_with_distance_for_50_requests(texts):
     return model_preds
 
 
-def infer_with_distance_for_checked_requests(texts, validator_hotkey=None):
+def infer_model_deberta_for_checked_requests(texts):
     cache = get_pred_result(texts)
     count_none = cache.count(None)
     print(f'count_none checked requests in cache: {count_none}')
     if count_none == 0:
         return cache
 
-    distances = infer_distance(texts, validator_hotkey)
+    deberta = infer_deberta(texts)
     model_preds = infer_model(texts)
     result = [None] * len(texts)
     for i in range(len(texts)):
-        if distances[i] is not None:
-            result[i] = distances[i]
+        if deberta[i] is not None:
+            result[i] = deberta[i]
         else:
             result[i] = model_preds[i]
 
@@ -164,20 +164,20 @@ def infer_with_distance_for_checked_requests(texts, validator_hotkey=None):
     return result
 
 
-def infer_with_distance_for_300_requests(texts, validator_hotkey=None):
+def infer_model_deberta_for_300_requests(texts):
     cache = get_pred_result(texts)
     count_none = cache.count(None)
     print(f'count_none 300 requests in cache: {count_none}')
     if count_none == 0:
         return cache
 
-    distances = infer_distance(texts, validator_hotkey)
+    deberta = infer_deberta(texts)
     model_preds = infer_model(texts)
     result = {i: None for i in range(len(texts))}
     preds_confs = {}
     for i in range(len(texts)):
-        if distances[i] is not None:
-            result[i] = distances[i]
+        if deberta[i] is not None:
+            result[i] = deberta[i]
         else:
             preds_confs[i] = model_preds[i]
 
@@ -374,35 +374,30 @@ if __name__ == '__main__':
                     if ctext == texts[i]:
                         check_ids.append(int(i))
 
-        deberta_response = infer_deberta(texts)
-        if time.time_ns() > 0:
-            continue
-
         print(f'before checkIds = {check_ids}')
         checked_model_response = infer_model(checked_texts)
         model_only_response = infer_model(texts)
         print_accuracy(model_only_response, 'model_only_response')
 
-
-        checked_distance_response = infer_with_distance_for_checked_requests(checked_texts, validator_hotkey="TEST01")
-        print(f'checked_distance_response = {checked_distance_response},  check_ids = {check_ids}')
-        checked_correct = cal_check_correct(checked_distance_response, check_ids)
+        checked_deberta_response = infer_model_deberta_for_checked_requests(checked_texts)
+        print(f'checked_distance_response = {checked_deberta_response},  check_ids = {check_ids}')
+        checked_correct = cal_check_correct(checked_deberta_response, check_ids)
         print(f'checked_correct count = {checked_correct}')
         sum_checked_correct += checked_correct
         sum_checked_requests += len(checked_texts)
         print(
-            f'++++++++++ Accuracy of infer_with_distance_for_checked_requests: {sum_checked_correct / sum_checked_requests}')
-        distance_response = infer_with_distance_for_300_requests(texts, "TEST")
-        print(f'distance response: {distance_response}')
+            f'++++++++++ Accuracy of infer_model_deberta_for_checked_requests: {sum_checked_correct / sum_checked_requests}')
+        deberta_reponse = infer_model_deberta_for_300_requests(texts)
+        print(f'deberta response: {deberta_reponse}')
         # print(f'distance response count None: {distance_response.count(None)}')
         # print(f'distance response first half count None: {distance_response[:150].count(None)}')
         # print(f'distance response second half count None: {distance_response[150:].count(None)}')
 
-        print_accuracy(distance_response, 'distance_response')
+        print_accuracy(deberta_reponse, 'deberta_reponse')
 
         rewards, metrics = get_rewards(labels=np.array(labels),
-                                       predictions_list=[model_only_response, distance_response],
-                                       check_predictions_list=[checked_model_response, checked_distance_response],
+                                       predictions_list=[model_only_response, deberta_reponse],
+                                       check_predictions_list=[checked_model_response, checked_deberta_response],
                                        version_predictions_list=[[], []],
                                        check_ids=np.array(check_ids))
         print(rewards, metrics)
@@ -414,7 +409,7 @@ if __name__ == '__main__':
             f"=====> count = {count} Model reward AVG: {sum_reward[0] / count}, Combine reward AVG: {sum_reward[1] / count}", )
 
         sum_correct_pred[0] += cal_correct_prediction(model_only_response)
-        sum_correct_pred[1] += cal_correct_prediction(distance_response)
+        sum_correct_pred[1] += cal_correct_prediction(deberta_reponse)
         sum_text = count * 300
         print(
             f"------> count = {count} Model correct pred AVG: {sum_correct_pred[0] / sum_text}, Combine correct pred AVG: {sum_correct_pred[1] / sum_text}", )
