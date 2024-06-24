@@ -88,8 +88,8 @@ def run_test():
 
         auged_texts = data['auged_texts']
         pred_result = []
-        for i in range(10):
-            texts = auged_texts[30 * i:30*i + 30]
+        for i in range(6):
+            texts = auged_texts[50 * i:50*i + 50]
             print(f"type of texts: {type(texts)}")
             pred = call_api(texts)
             pred_result.extend(pred)
@@ -148,7 +148,7 @@ def is_ai(text):
         })
         response = requests.post('https://api.zenrows.com/v1/', params=params, headers=headers, data=data, timeout=10)
         score = response.json()["data"]["text_score"]
-        print(f"score = {score}")
+        # print(f"score = {score}")
         # return score >= 0.7
         return score
     except Exception as e:
