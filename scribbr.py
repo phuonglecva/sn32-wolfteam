@@ -87,6 +87,7 @@ def run_test():
         pred_result = []
         for i in range(10):
             texts = auged_texts[30 * i:30*i + 30]
+            print(f"type of texts: {type(texts)}")
             pred = call_api(texts)
             pred_result.extend(pred)
 
