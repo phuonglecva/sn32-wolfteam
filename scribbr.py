@@ -107,11 +107,11 @@ def run_test():
         # print(
         #     f'file {f_name}, pred wrong: {comp.count(False)}, pred correct: {comp.count(True)}, accuracy: {comp.count(True) / len(pred_result)}, average: {total_pred_correct / total_text}, time_processing = {time_processing}ms')
         prediction = [None] * len(pred_result)
-        for pred in pred_result:
-            if pred < 0.00000001:
-                prediction.append(False)
-            elif pred > 0.6:
-                prediction.append(True)
+        for i in range(len(pred_result)):
+            if pred_result[i] < 0.00000001:
+                prediction[i] = False
+            elif pred_result[i] > 0.6:
+                prediction[i] = True
 
         print(f"prediction: {prediction}")
         print_accuracy_distance_test(prediction)
