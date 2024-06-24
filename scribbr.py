@@ -110,7 +110,7 @@ def run_test():
         for i in range(len(pred_result)):
             if pred_result[i] < 0.00000001:
                 prediction[i] = False
-            elif pred_result[i] > 0.6:
+            elif pred_result[i] > 0.75:
                 prediction[i] = True
 
         print(f"prediction: {prediction}")
