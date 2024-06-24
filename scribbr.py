@@ -2,6 +2,7 @@ import json
 import time
 
 import requests
+from typing import List
 
 SAMPLE_DATA_DIR = '/root/sample_sent_data_pile22'
 # API = "http://130.250.178.211:63443/predict"
@@ -45,7 +46,7 @@ def detect(text):
     return score > 0.7
 
 
-def call_api(texts: list[str]):
+def call_api(texts: List[str]):
     import concurrent.futures
     max_workers = 10
     with concurrent.futures.ThreadPoolExecutor(max_workers=max_workers) as executor:
