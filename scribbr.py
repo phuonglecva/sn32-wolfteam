@@ -146,7 +146,7 @@ def is_ai(text):
             'lang': 'en',
             "text": text
         })
-        response = requests.post('https://api.zenrows.com/v1/', params=params, headers=headers, data=data, timeout=10)
+        response = requests.post('https://api.zenrows.com/v1/', params=params, headers=headers, data=data, timeout=3)
         score = response.json()["data"]["text_score"]
         # print(f"score = {score}")
         # return score >= 0.7
