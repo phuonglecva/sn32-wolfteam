@@ -113,6 +113,7 @@ def run_test():
             elif pred > 0.7:
                 prediction.append(True)
 
+        print(f"prediction: {prediction}")
         print_accuracy_distance_test(prediction)
 
 def is_ai(text):
