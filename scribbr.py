@@ -4,6 +4,8 @@ import time
 import requests
 from typing import List
 
+from validation import print_accuracy_distance_test
+
 SAMPLE_DATA_DIR = '/root/sample_sent_data_pile22'
 # API = "http://130.250.178.211:63443/predict"
 # API = "http://130.250.178.211:54337/predict"
@@ -92,18 +94,26 @@ def run_test():
             pred = call_api(texts)
             pred_result.extend(pred)
 
-        if len(result) != len(pred_result):
-            print(f"len(result) = {len(result)}, len(pred_result) = {len(pred_result)}")
-            continue
-        comp = [result[i] == pred_result[i] for i in range(len(result))]
-        total_text += len(pred_result)
-        total_pred_correct += comp.count(True)
+        # if len(result) != len(pred_result):
+        #     print(f"len(result) = {len(result)}, len(pred_result) = {len(pred_result)}")
+        #     continue
+        # comp = [result[i] == pred_result[i] for i in range(len(result))]
+        # total_text += len(pred_result)
+        # total_pred_correct += comp.count(True)
         end_time = time.time_ns()
         time_processing = (end_time - start_time) // 1000_000
+        print(f"time processing: {time_processing} ms")
+        print(f"pred_result: {pred_result}")
+        # print(
+        #     f'file {f_name}, pred wrong: {comp.count(False)}, pred correct: {comp.count(True)}, accuracy: {comp.count(True) / len(pred_result)}, average: {total_pred_correct / total_text}, time_processing = {time_processing}ms')
+        prediction = [None] * len(pred_result)
+        for pred in pred_result:
+            if pred < 0.0001:
+                prediction.append(False)
+            elif pred > 0.7:
+                prediction.append(True)
 
-        print(
-            f'file {f_name}, pred wrong: {comp.count(False)}, pred correct: {comp.count(True)}, accuracy: {comp.count(True) / len(pred_result)}, average: {total_pred_correct / total_text}, time_processing = {time_processing}ms')
-
+        print_accuracy_distance_test(prediction)
 
 def is_ai(text):
     try:
@@ -138,10 +148,11 @@ def is_ai(text):
         response = requests.post('https://api.zenrows.com/v1/', params=params, headers=headers, data=data, timeout=10)
         score = response.json()["data"]["text_score"]
         print(f"score = {score}")
-        return score >= 0.7
+        # return score >= 0.7
+        return score
     except Exception as e:
         print(f'generated an exception: {e}')
-        return False
+        return 0
 
 
 if __name__ == "__main__":
