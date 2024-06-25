@@ -17,7 +17,7 @@ def embeddings(fpath: str, part: int, model: SentenceTransformer, pool, batch_si
     start = time.time()
     with open(f"{fpath}", "r", encoding="utf8") as f:
         texts = json.load(f)
-    print(f"Loaded {len(texts)} texts from '{fpath}'.")    
+    print(f"Loaded {len(texts)} texts from '{fpath}'.")
     print(f"Embedding {len(texts)} texts.")
     embeddings = model.encode_multi_process(texts, pool, batch_size=batch_size)
     print(f"Embeddings shape: {embeddings.shape}, time taken: {time.time() - start} seconds.")
@@ -28,7 +28,7 @@ def embeddings(fpath: str, part: int, model: SentenceTransformer, pool, batch_si
     with open(output, "wb") as f:
         np.save(f, embeddings)
     print(f"Embeddings for '{fpath}' saved successfully. Time taken: {time.time() - start} seconds.")
-    
+
 
 def get_model():
     model = SentenceTransformer(
@@ -40,20 +40,23 @@ def get_model():
 
 if __name__ == "__main__":
     import argparse
+
     parser = argparse.ArgumentParser(description='Embedding service')
     parser.add_argument('--part', type=str, help='Part number')
     parser.add_argument('--devices', type=str, default="0")
-    
+    parser.add_argument('--dir', type=str, default="")
+
     args = parser.parse_args()
-    devices = args.devices.split(',')   
+    devices = args.devices.split(',')
     if len(devices) == 0:
         print("No devices specified.")
         exit(0)
     devices = [f"cuda:{d}" for d in devices]
-    
+
     model = get_model()
     pool = model.start_multi_process_pool(target_devices=devices)
     part = str(args.part)
+    input_dir = args.dir
     # file_path = f'output/{part}.json'
-    file_path = f'/root/sn32-wolfteam/data_input/22/{part}.json'
+    file_path = f'{input_dir}/{part}.json'
     embeddings(file_path, args.part, model, pool)
