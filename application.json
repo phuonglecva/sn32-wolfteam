@@ -56,11 +56,11 @@
       "1025": "http://174.92.219.240:52109/predict"
     },
     "model": {
-      "url": "http://174.92.219.240:52135/predict",
+      "url": "http://202.79.96.144:54927/predict",
       "time_out": 12
     },
     "deberta": {
-      "url": "http://174.92.219.240:52173/predict",
+      "url": "http://96.241.192.5:42587/predict",
       "time_out": 15
     },
     "nns": {
