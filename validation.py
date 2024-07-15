@@ -75,7 +75,6 @@ def infer_rule_based(texts):
     }
     response = requests.request("POST", url, json=payload, timeout=APP_CONFIG.get_rule_based_timeout())
     result = response.json()["response"]
-    result = [not re if re is not None else re for re in result]
     print(f'rule base result : {result}')
     print(f'rule base count None: {result.count(None)}')
     print(f'rule base fist half count True: {result[:150].count(True)}')
