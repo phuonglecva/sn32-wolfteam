@@ -126,6 +126,22 @@ class AppConfig(ABC):
             traceback.print_exc()
         return None
 
+    def get_rule_based_server_url(self):
+        try:
+            return self.value['application']['rule_based']['url']
+        except Exception as e:
+            print(e)
+            traceback.print_exc()
+        return None
+
+    def get_rule_based_timeout(self):
+        try:
+            return self.value['application']['rule_based']['time_out']
+        except Exception as e:
+            print(e)
+            traceback.print_exc()
+        return 10
+
     def get_deberta_timeout(self):
         try:
             return self.value['application']['deberta']['time_out']

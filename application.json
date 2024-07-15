@@ -63,6 +63,10 @@
       "url": "http://96.241.192.5:42587/predict",
       "time_out": 15
     },
+    "rule_based": {
+      "url": "http://202.79.96.144:54640/preds",
+      "time_out": 10
+    },
     "nns": {
       "time_out": 12,
       "ai_threshold": 0.6,

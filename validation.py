@@ -66,6 +66,25 @@ def infer_deberta(texts):
     return result
 
 
+def infer_rule_based(texts):
+    print(f'start infer_rule_based of {len(texts)} texts')
+    time_start = time.time_ns()
+    url = APP_CONFIG.get_rule_based_server_url()
+    payload = {
+        "texts": texts
+    }
+    response = requests.request("POST", url, json=payload, timeout=APP_CONFIG.get_rule_based_timeout())
+    result = response.json()["response"]
+    result = [not re if re is not None else re for re in result]
+    print(f'rule base result : {result}')
+    print(f'rule base count None: {result.count(None)}')
+    print(f'rule base fist half count True: {result[:150].count(True)}')
+    print(f'rule base second half count False: {result[150:].count(False)}')
+    time_end = time.time_ns()
+    print(f'time infer model: {(time_end - time_start) // 1000_000}')
+    return result
+
+
 def call_distance_api(sentences, url=None):
     time_start = time.time_ns()
     print(f'call distance api: {url}, len(sentences) = {len(sentences)}')
@@ -152,10 +171,13 @@ def infer_model_deberta_for_checked_requests(texts):
         return cache
 
     deberta = infer_deberta(texts)
+    rule_based = infer_rule_based(texts)
     model_preds = infer_model(texts)
     result = [None] * len(texts)
     for i in range(len(texts)):
-        if deberta[i] is not None:
+        if rule_based[i] is not None:
+            result[i] = rule_based[i]
+        elif deberta[i] is not None:
             result[i] = deberta[i]
         else:
             result[i] = model_preds[i]
@@ -172,11 +194,14 @@ def infer_model_deberta_for_300_requests(texts):
         return cache
 
     deberta = infer_deberta(texts)
+    rule_based = infer_rule_based(texts)
     model_preds = infer_model(texts)
     result = {i: None for i in range(len(texts))}
     preds_confs = {}
     for i in range(len(texts)):
-        if deberta[i] is not None:
+        if rule_based[i] is not None:
+            result[i] = rule_based[i]
+        elif deberta[i] is not None:
             result[i] = deberta[i]
         else:
             preds_confs[i] = model_preds[i]
