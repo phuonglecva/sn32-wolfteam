@@ -187,6 +187,7 @@ async def text_distances(text_req: TextRequest):
         return {"distances": None}
 
 if __name__ == '__main__':
+    #start main 
     import argparse
     import threading
     parser = argparse.ArgumentParser(description='Embedding service')
